@@ -11,7 +11,7 @@
             <p class="text-brand-300 text-xs">{{ auth()->user()->shop_name }}</p>
         </div>
         <nav class="space-y-1 px-3">
-            @foreach([['artisan.dashboard','📊','Dashboard'],['artisan.products.index','📦','My Products'],['artisan.products.create','➕','Add Product'],['artisan.orders','🛒','Orders']] as [$r,$i,$l])
+            @foreach([['artisan.dashboard','','Dashboard'],['artisan.products.index','','My Products'],['artisan.products.create','','Add Product'],['artisan.orders','🛒','Orders']] as [$r,$i,$l])
                 <a href="{{ route($r) }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition {{ request()->routeIs($r) ? 'bg-brand-700 text-white font-semibold' : 'text-brand-200 hover:bg-brand-700' }}">{{ $i }} {{ $l }}</a>
             @endforeach
         </nav>
@@ -31,7 +31,7 @@
                                 <p class="text-xs text-gray-400 mt-1">
                                     {{ $order->created_at->format('M d, Y') }} •
                                     Customer: {{ $order->customer->name }} •
-                                    📞 {{ $order->contact_number }}
+                                     {{ $order->contact_number }}
                                 </p>
                             </div>
                             <div class="text-right">
@@ -49,7 +49,7 @@
                                         @if($item->product && $item->product->images)
                                             <img src="{{ asset('storage/' . $item->product->images[0]) }}" class="w-full h-full object-cover">
                                         @else
-                                            <div class="w-full h-full flex items-center justify-center text-lg">🎨</div>
+                                            <div class="w-full h-full flex items-center justify-center text-lg"></div>
                                         @endif
                                     </div>
                                     <div class="flex-1 text-sm">
@@ -63,7 +63,7 @@
 
                         {{-- Delivery address --}}
                         <p class="text-xs text-gray-500 mb-3">
-                            📍 {{ $order->delivery_address }}, {{ $order->city }}, {{ $order->province }}
+                             {{ $order->delivery_address }}, {{ $order->city }}, {{ $order->province }}
                         </p>
 
                         {{-- Status Action --}}
@@ -72,12 +72,12 @@
                                 @csrf @method('PATCH')
                                 <input type="hidden" name="status" value="processing">
                                 <button class="bg-blue-600 text-white text-sm font-bold px-4 py-2 rounded-lg hover:bg-blue-700 transition">
-                                    🔨 Mark as Processing
+                                     Mark as Processing
                                 </button>
                             </form>
                         @elseif($order->status === 'processing')
                             <span class="text-xs text-blue-600 font-medium bg-blue-50 px-3 py-1.5 rounded-lg">
-                                🔨 You're currently processing this order. Shipping will be handled by admin.
+                                 You're currently processing this order. Shipping will be handled by admin.
                             </span>
                         @endif
                     </div>
@@ -86,7 +86,7 @@
             <div class="mt-8">{{ $orders->links() }}</div>
         @else
             <div class="text-center py-20">
-                <div class="text-6xl mb-4">🛒</div>
+                <div class="text-6xl mb-4"></div>
                 <h3 class="text-xl font-semibold text-gray-600 mb-2">No orders yet</h3>
                 <p class="text-gray-400">Orders for your products will appear here.</p>
             </div>

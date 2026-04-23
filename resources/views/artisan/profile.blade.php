@@ -15,9 +15,9 @@
                 <h1 class="font-display text-3xl font-bold mb-1">{{ $artisan->shop_name ?? $artisan->name }}</h1>
                 <p class="text-brand-200 text-sm mb-3">by {{ $artisan->name }}</p>
                 <div class="flex flex-wrap gap-3 text-sm text-brand-100">
-                    <span>🏺 {{ $artisan->tribe }} Artisan</span>
-                    <span>📍 {{ $artisan->region }}</span>
-                    <span>📦 {{ $products->total() }} Products</span>
+                    <span> {{ $artisan->tribe }} Artisan</span>
+                    <span> {{ $artisan->region }}</span>
+                    <span> {{ $products->total() }} Products</span>
                 </div>
                 @if($artisan->bio)
                     <p class="mt-4 text-brand-100 max-w-xl text-sm leading-relaxed">{{ $artisan->bio }}</p>
