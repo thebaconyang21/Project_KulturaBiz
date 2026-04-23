@@ -28,7 +28,7 @@
                     @endforeach
                 @else
                     <div class="w-full h-full flex items-center justify-center">
-                        <span class="text-9xl opacity-20">🎨</span>
+                        <span class="text-9xl opacity-20"></span>
                     </div>
                 @endif
             </div>
@@ -79,10 +79,10 @@
             {{-- Origin info --}}
             <div class="bg-brand-50 rounded-xl p-4 mb-6 space-y-2">
                 @if($product->origin_location)
-                    <p class="text-sm text-gray-700"><span class="font-semibold text-brand-700">📍 Origin:</span> {{ $product->origin_location }}</p>
+                    <p class="text-sm text-gray-700"><span class="font-semibold text-brand-700"> Origin:</span> {{ $product->origin_location }}</p>
                 @endif
                 @if($product->materials_used)
-                    <p class="text-sm text-gray-700"><span class="font-semibold text-brand-700">🪵 Materials:</span> {{ $product->materials_used }}</p>
+                    <p class="text-sm text-gray-700"><span class="font-semibold text-brand-700"> Materials:</span> {{ $product->materials_used }}</p>
                 @endif
             </div>
 
@@ -108,7 +108,7 @@
                                    class="w-20 border border-gray-200 rounded-lg px-3 py-3 text-center focus:outline-none focus:ring-2 focus:ring-brand-400">
                             <button type="submit"
                                     class="flex-1 bg-brand-700 text-white font-bold py-3 rounded-xl hover:bg-brand-800 transition-all hover:shadow-lg">
-                                🛒 Add to Cart
+                                 Add to Cart
                             </button>
                         </form>
                     @endif
@@ -126,9 +126,9 @@
 
             {{-- Delivery info --}}
             <div class="mt-4 text-xs text-gray-500 space-y-1">
-                <p>🚚 Estimated delivery: 5-10 business days</p>
-                <p>💳 Cash on Delivery available</p>
-                <p>🔒 Secure checkout</p>
+                <p> Estimated delivery: 5-10 business days</p>
+                <p>Cash on Delivery available</p>
+                <p>Secure checkout</p>
             </div>
         </div>
     </div>
@@ -197,7 +197,7 @@
                                 <img src="{{ asset('storage/' . $related->images[0]) }}" alt="{{ $related->name }}"
                                      class="w-full h-full object-cover group-hover:scale-105 transition-transform">
                             @else
-                                <div class="w-full h-full flex items-center justify-center text-4xl opacity-30">🎨</div>
+                                <div class="w-full h-full flex items-center justify-center text-4xl opacity-30"></div>
                             @endif
                         </div>
                         <div class="p-3">

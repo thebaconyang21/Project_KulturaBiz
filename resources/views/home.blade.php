@@ -4,7 +4,7 @@
 
 @section('content')
 
-{{-- HERO SECTION --}}
+{{-- HERO SECTIONnnnnn --}}
 <section class="bg-brand-700 hero-pattern text-white py-24 relative overflow-hidden">
     <div class="absolute inset-0 bg-gradient-to-br from-brand-900/80 to-brand-600/60"></div>
     <div class="max-w-7xl mx-auto px-4 relative z-10">
@@ -29,7 +29,7 @@
             </div>
         </div>
     </div>
-    {{-- Decorative Okir --}}
+    
     <div class="absolute right-0 top-0 bottom-0 w-1/3 opacity-10 hidden lg:block">
         <svg viewBox="0 0 400 600" class="w-full h-full">
             <path d="M200,50 C300,100 380,200 350,300 C320,400 250,450 200,550 C150,450 80,400 50,300 C20,200 100,100 200,50 Z" fill="currentColor" opacity="0.3"/>
@@ -39,7 +39,7 @@
     </div>
 </section>
 
-{{-- STATS BAR --}}
+
 <section class="bg-brand-800 text-white py-6">
     <div class="max-w-7xl mx-auto px-4">
         <div class="grid grid-cols-3 gap-4 text-center">
@@ -71,13 +71,13 @@
                 <div class="w-12 h-12 bg-brand-50 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:bg-brand-100 transition">
                     <span class="text-2xl">
                         @switch($category->slug)
-                            @case('textiles') 🧵 @break
-                            @case('baskets') 🧺 @break
-                            @case('accessories') 📿 @break
-                            @case('woodcrafts') 🪵 @break
-                            @case('bags') 👜 @break
-                            @case('homedecor') 🏮 @break
-                            @default 🎨
+                            @case('textiles')  @break {{--dapat icon ni dinhi--}}
+                            @case('baskets')  @break
+                            @case('accessories')  @break
+                            @case('woodcrafts') @break
+                            @case('bags')  @break
+                            @case('homedecor')  @break
+                            @default 
                         @endswitch
                     </span>
                 </div>

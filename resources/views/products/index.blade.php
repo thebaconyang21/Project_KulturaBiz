@@ -84,7 +84,7 @@
                                          class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                                 @else
                                     <div class="w-full h-full flex items-center justify-center">
-                                        <span class="text-6xl opacity-30">🎨</span>
+                                        <span class="text-6xl opacity-30"></span>
                                     </div>
                                 @endif
                                 <span class="absolute top-3 left-3 bg-white/90 text-brand-700 text-xs font-semibold px-2 py-1 rounded-full">
