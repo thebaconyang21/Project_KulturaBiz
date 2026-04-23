@@ -9,7 +9,7 @@
 
     @if(empty($cart))
         <div class="text-center py-24">
-            <div class="text-7xl mb-4">🛒</div>
+            <div class="text-7xl mb-4"></div>
             <h3 class="text-xl font-semibold text-gray-600 mb-2">Your cart is empty</h3>
             <p class="text-gray-400 mb-6">Browse our collection of handcrafted products</p>
             <a href="{{ route('products.index') }}"
@@ -107,9 +107,9 @@
                     </a>
 
                     <div class="mt-5 pt-5 border-t border-gray-100 space-y-2 text-xs text-gray-400">
-                        <p>🔒 Secure checkout</p>
-                        <p>🚚 Estimated delivery: 5-10 business days</p>
-                        <p>💳 Cash on Delivery available</p>
+                        <p>Secure checkout</p>
+                        <p>Estimated delivery: 5-10 business days</p>
+                        <p>Cash on Delivery available</p>
                     </div>
                 </div>
             </div>
