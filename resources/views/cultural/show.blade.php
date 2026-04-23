@@ -20,10 +20,10 @@
                 {{ $story->tribe_community }}
             </span>
             <span class="bg-gray-100 text-gray-600 text-xs px-3 py-1 rounded-full">
-                📍 {{ $story->location }}
+                 {{ $story->location }}
             </span>
             @if($story->is_featured)
-                <span class="bg-accent text-brand-900 text-xs font-bold px-3 py-1 rounded-full">⭐ Featured</span>
+                <span class="bg-accent text-brand-900 text-xs font-bold px-3 py-1 rounded-full"> Featured</span>
             @endif
         </div>
 
@@ -61,7 +61,7 @@
 
     {{-- Cultural Details --}}
     <div class="bg-brand-50 border border-brand-100 rounded-2xl p-6 mb-10">
-        <h2 class="font-semibold text-brand-800 mb-4">🏛️ Heritage Details</h2>
+        <h2 class="font-semibold text-brand-800 mb-4"> Heritage Details</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
             @if($story->cultural_significance)
                 <div>
@@ -89,14 +89,14 @@
     {{-- Linked Product --}}
     @if($story->product)
         <div class="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm mb-10">
-            <h2 class="font-semibold text-gray-900 mb-4">🎨 See the Craft in the Marketplace</h2>
+            <h2 class="font-semibold text-gray-900 mb-4"> See the Craft in the Marketplace</h2>
             <a href="{{ route('products.show', $story->product->slug) }}"
                class="flex items-center gap-4 hover:bg-gray-50 rounded-xl p-3 transition group">
                 <div class="w-20 h-20 bg-brand-100 rounded-xl overflow-hidden shrink-0">
                     @if($story->product->images)
                         <img src="{{ asset('storage/' . $story->product->images[0]) }}" class="w-full h-full object-cover">
                     @else
-                        <div class="w-full h-full flex items-center justify-center text-3xl opacity-30">🎨</div>
+                        <div class="w-full h-full flex items-center justify-center text-3xl opacity-30"></div>
                     @endif
                 </div>
                 <div>

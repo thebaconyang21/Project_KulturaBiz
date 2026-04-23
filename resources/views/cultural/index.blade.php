@@ -53,7 +53,7 @@
                         </div>
                         @if($story->is_featured)
                             <span class="absolute top-3 right-3 bg-accent text-brand-900 text-xs font-bold px-2 py-0.5 rounded-full">
-                                ⭐ Featured
+                                 Featured
                             </span>
                         @endif
                     </div>
@@ -69,7 +69,7 @@
                             <img src="{{ $story->author->profile_photo_url }}" alt="" class="w-6 h-6 rounded-full">
                             {{ $story->author->name }}
                             <span class="mx-1">•</span>
-                            📍 {{ $story->location }}
+                             {{ $story->location }}
                         </div>
                     </div>
                 </a>
@@ -79,7 +79,7 @@
         <div class="mt-10">{{ $stories->links() }}</div>
     @else
         <div class="text-center py-20 text-gray-400">
-            <div class="text-6xl mb-4">📖</div>
+            <div class="text-6xl mb-4"></div>
             <h3 class="text-xl font-semibold mb-2">No stories found</h3>
             <p class="text-sm">Be the first artisan to share your cultural story!</p>
         </div>
