@@ -16,10 +16,10 @@
         </div>
         <nav class="space-y-1 px-3">
             @foreach([
-                ['artisan.dashboard',       '📊', 'Dashboard'],
-                ['artisan.products.index',  '📦', 'My Products'],
-                ['artisan.products.create', '➕', 'Add Product'],
-                ['artisan.orders',          '🛒', 'Orders'],
+                ['artisan.dashboard',       '', 'Dashboard'],
+                ['artisan.products.index',  '', 'My Products'],
+                ['artisan.products.create', '', 'Add Product'],
+                ['artisan.orders',          '', 'Orders'],
             ] as [$route, $icon, $label])
                 <a href="{{ route($route) }}"
                    class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition
@@ -38,7 +38,7 @@
             </div>
             <a href="{{ route('artisan.products.create') }}"
                class="bg-brand-700 text-white font-bold px-5 py-2.5 rounded-xl hover:bg-brand-800 transition flex items-center gap-2">
-                ➕ Add Product
+                 Add Product
             </a>
         </div>
 
@@ -99,7 +99,7 @@
                 </div>
             @else
                 <div class="text-center py-10 text-gray-400">
-                    <div class="text-4xl mb-2">📦</div>
+                    <div class="text-4xl mb-2"></div>
                     <p>No orders yet. Share your products to start selling!</p>
                 </div>
             @endif
