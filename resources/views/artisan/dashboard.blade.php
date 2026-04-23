@@ -33,7 +33,7 @@
     <div class="flex-1 bg-gray-50 p-8">
         <div class="flex items-center justify-between mb-8">
             <div>
-                <h1 class="font-display text-2xl font-bold text-gray-900">Welcome back, {{ auth()->user()->name }}! 👋</h1>
+                <h1 class="font-display text-2xl font-bold text-gray-900">Welcome back, {{ auth()->user()->name }}! </h1>
                 <p class="text-gray-400 text-sm mt-1">{{ auth()->user()->tribe }} Artisan • {{ auth()->user()->region }}</p>
             </div>
             <a href="{{ route('artisan.products.create') }}"
