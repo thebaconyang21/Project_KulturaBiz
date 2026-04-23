@@ -11,7 +11,7 @@
             <p class="text-brand-300 text-xs">{{ auth()->user()->shop_name }}</p>
         </div>
         <nav class="space-y-1 px-3">
-            @foreach([['artisan.dashboard','📊','Dashboard'],['artisan.products.index','📦','My Products'],['artisan.products.create','➕','Add Product'],['artisan.orders','🛒','Orders']] as [$r,$i,$l])
+            @foreach([['artisan.dashboard','','Dashboard'],['artisan.products.index','','My Products'],['artisan.products.create','','Add Product'],['artisan.orders','🛒','Orders']] as [$r,$i,$l])
                 <a href="{{ route($r) }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition {{ request()->routeIs($r) ? 'bg-brand-700 text-white font-semibold' : 'text-brand-200 hover:bg-brand-700' }}">{{ $i }} {{ $l }}</a>
             @endforeach
         </nav>
@@ -113,7 +113,7 @@
 
                 {{-- Cultural Heritage --}}
                 <div class="bg-brand-50 border border-brand-100 rounded-2xl p-6 space-y-4">
-                    <h2 class="font-semibold text-brand-800">🏛️ Cultural Heritage Documentation</h2>
+                    <h2 class="font-semibold text-brand-800"> Cultural Heritage Documentation</h2>
 
                     <div>
                         <label class="block text-sm font-medium text-brand-700 mb-1">Origin Location</label>
@@ -137,7 +137,7 @@
                 <div class="flex gap-3">
                     <button type="submit"
                             class="bg-brand-700 text-white font-bold px-8 py-3 rounded-xl hover:bg-brand-800 transition hover:shadow-lg">
-                        💾 Save Changes
+                        Save Changes
                     </button>
                     <a href="{{ route('artisan.products.index') }}"
                        class="border border-gray-200 text-gray-600 font-semibold px-8 py-3 rounded-xl hover:bg-gray-50 transition">

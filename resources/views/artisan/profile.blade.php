@@ -59,7 +59,7 @@
                                 <img src="{{ asset('storage/' . $product->images[0]) }}" alt="{{ $product->name }}"
                                      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                             @else
-                                <div class="w-full h-full flex items-center justify-center text-4xl opacity-30">🎨</div>
+                                <div class="w-full h-full flex items-center justify-center text-4xl opacity-30"></div>
                             @endif
                         </div>
                         <div class="p-3">

@@ -11,7 +11,7 @@
             <p class="text-brand-300 text-xs">{{ auth()->user()->shop_name }}</p>
         </div>
         <nav class="space-y-1 px-3">
-            @foreach([['artisan.dashboard','📊','Dashboard'],['artisan.products.index','📦','My Products'],['artisan.products.create','➕','Add Product'],['artisan.orders','🛒','Orders']] as [$r,$i,$l])
+            @foreach([['artisan.dashboard','','Dashboard'],['artisan.products.index','','My Products'],['artisan.products.create','','Add Product'],['artisan.orders','','Orders']] as [$r,$i,$l])
                 <a href="{{ route($r) }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition {{ request()->routeIs($r) ? 'bg-brand-700 text-white font-semibold' : 'text-brand-200 hover:bg-brand-700' }}">{{ $i }} {{ $l }}</a>
             @endforeach
         </nav>
@@ -22,7 +22,7 @@
             <h1 class="font-display text-2xl font-bold text-gray-900">My Products</h1>
             <a href="{{ route('artisan.products.create') }}"
                class="bg-brand-700 text-white font-bold px-5 py-2.5 rounded-xl hover:bg-brand-800 transition">
-                ➕ Add Product
+                Add Product
             </a>
         </div>
 
@@ -35,7 +35,7 @@
                                 <img src="{{ asset('storage/' . $product->images[0]) }}" alt="{{ $product->name }}"
                                      class="w-full h-full object-cover">
                             @else
-                                <div class="w-full h-full flex items-center justify-center text-5xl opacity-30">🎨</div>
+                                <div class="w-full h-full flex items-center justify-center text-5xl opacity-30"></div>
                             @endif
                             <span class="{{ match($product->status) { 'active' => 'badge-success', 'inactive' => 'badge-secondary', default => 'badge-warning' } }} absolute top-3 right-3">
                                 {{ ucfirst($product->status) }}
@@ -51,7 +51,7 @@
                             <div class="flex gap-2">
                                 <a href="{{ route('artisan.products.edit', $product->id) }}"
                                    class="flex-1 text-center bg-brand-50 text-brand-700 font-semibold text-sm py-2 rounded-lg hover:bg-brand-100 transition">
-                                    ✏️ Edit
+                                    Edit
                                 </a>
                                 <a href="{{ route('products.show', $product->slug) }}"
                                    class="flex-1 text-center bg-gray-50 text-gray-600 font-semibold text-sm py-2 rounded-lg hover:bg-gray-100 transition">
@@ -72,7 +72,7 @@
             <div class="mt-8">{{ $products->links() }}</div>
         @else
             <div class="text-center py-24">
-                <div class="text-7xl mb-4">🎨</div>
+                <div class="text-7xl mb-4"></div>
                 <h3 class="text-xl font-semibold text-gray-600 mb-2">No products yet</h3>
                 <p class="text-gray-400 mb-6">Start sharing your handcrafted products with the world!</p>
                 <a href="{{ route('artisan.products.create') }}"
