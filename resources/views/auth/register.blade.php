@@ -10,7 +10,7 @@
         {{-- Logo --}}
         <div class="text-center mb-8">
             <a href="{{ route('home') }}" class="inline-flex items-center gap-2 text-brand-700">
-                <span class="text-accent text-4xl">⬡</span>
+                <span class="text-accent text-4xl"></span>
                 <span class="font-display text-3xl font-bold">KulturaBiz</span>
             </a>
             <p class="text-gray-500 mt-2 text-sm">Join the Mindanaoan Heritage Marketplace</p>
@@ -92,7 +92,7 @@
 
                 {{-- Artisan-specific fields --}}
                 <div x-show="role === 'artisan'" x-transition class="space-y-4 border-t border-gray-100 pt-4 mt-4">
-                    <p class="text-sm text-brand-700 font-medium">🎨 Artisan Information</p>
+                    <p class="text-sm text-brand-700 font-medium"> Artisan Information</p>
 
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Shop/Studio Name *</label>

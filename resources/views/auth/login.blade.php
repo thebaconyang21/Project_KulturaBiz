@@ -10,7 +10,7 @@
         {{-- Logo --}}
         <div class="text-center mb-8">
             <a href="{{ route('home') }}" class="inline-flex items-center gap-2 text-brand-700">
-                <span class="text-accent text-4xl">⬡</span>
+                <span class="text-accent text-4xl"></span>
                 <span class="font-display text-3xl font-bold">KulturaBiz</span>
             </a>
             <p class="text-gray-500 mt-2 text-sm">Sign in to your account</p>
