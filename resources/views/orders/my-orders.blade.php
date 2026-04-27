@@ -51,7 +51,7 @@
         <div class="mt-8">{{ $orders->links() }}</div>
     @else
         <div class="text-center py-20">
-            <div class="text-6xl mb-4">📦</div>
+            <div class="text-6xl mb-4"></div>
             <h3 class="text-xl font-semibold text-gray-600 mb-2">No orders yet</h3>
             <p class="text-gray-400 mb-6">Start shopping to see your orders here.</p>
             <a href="{{ route('products.index') }}"

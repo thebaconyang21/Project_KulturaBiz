@@ -33,10 +33,7 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Creates the categories table for product categorization.
-     * Examples: Textiles, Crafts, Accessories, Pottery, Jewelry
-     */
+
     public function up(): void
     {
         Schema::create('categories', function (Blueprint $table) {
@@ -50,9 +47,7 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
+
     public function down(): void
     {
         Schema::dropIfExists('categories');

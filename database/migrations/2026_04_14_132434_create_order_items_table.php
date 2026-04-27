@@ -35,10 +35,7 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Creates the order_items table.
-     * Each order can have multiple items (products).
-     */
+
     public function up(): void
     {
         Schema::create('order_items', function (Blueprint $table) {
@@ -48,18 +45,15 @@ return new class extends Migration
             $table->foreignId('product_id')->constrained()->onDelete('cascade');
             
             // Store snapshot of product data at time of purchase
-            $table->string('product_name');         // In case product name changes later
-            $table->decimal('price', 10, 2);        // Price at time of purchase
+            $table->string('product_name');         
+            $table->decimal('price', 10, 2);        
             $table->integer('quantity');
-            $table->decimal('subtotal', 10, 2);     // price * quantity
+            $table->decimal('subtotal', 10, 2);     
             
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('order_items');

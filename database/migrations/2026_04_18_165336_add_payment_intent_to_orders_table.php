@@ -6,10 +6,7 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Add payment_intent_id column to orders table.
-     * Used to link orders to PayMongo payment intents.
-     */
+
     public function up(): void
     {
         Schema::table('orders', function (Blueprint $table) {

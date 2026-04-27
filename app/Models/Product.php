@@ -41,9 +41,6 @@ class Product extends Model
         'average_rating' => 'float',
     ];
 
-    // ==========================================
-    // RELATIONSHIPS
-    // ==========================================
 
     /**
      * The artisan who created this product.

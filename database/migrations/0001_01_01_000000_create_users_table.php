@@ -55,10 +55,7 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     * Creates the main users table with role support (admin, artisan, customer).
-     */
+
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
@@ -82,17 +79,14 @@ return new class extends Migration
             
             // For artisans - shop/tribe info
             $table->string('shop_name')->nullable();
-            $table->string('tribe')->nullable();        // e.g., Maranao, Tausug, Manobo
-            $table->string('region')->nullable();       // e.g., Region XII, BARMM
+            $table->string('tribe')->nullable();       
+            $table->string('region')->nullable();       
             
             $table->rememberToken();
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('users');

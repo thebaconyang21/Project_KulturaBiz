@@ -8,11 +8,6 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\Admin\DashboardController as AdminController;
 use App\Http\Controllers\Artisan\ProductController as ArtisanController;
 
-/*
-|--------------------------------------------------------------------------
-| PUBLIC ROUTES
-|--------------------------------------------------------------------------
-*/
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -22,14 +17,9 @@ Route::get('/products/{slug}', [HomeController::class, 'productShow'])->name('pr
 Route::get('/cultural-stories', [HomeController::class, 'culturalStories'])->name('cultural.index');
 Route::get('/cultural-stories/{slug}', [HomeController::class, 'culturalStoryShow'])->name('cultural.show');
 
-// FIX: renamed to /artisans/{id} to avoid conflict with the /artisan/* prefix group below
+
 Route::get('/artisans/{id}', [HomeController::class, 'artisanProfile'])->name('artisan.profile');
 
-/*
-|--------------------------------------------------------------------------
-| AUTHENTICATION ROUTES
-|--------------------------------------------------------------------------
-*/
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'loginForm'])->name('login');
@@ -40,11 +30,6 @@ Route::middleware('guest')->group(function () {
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
 
-/*
-|--------------------------------------------------------------------------
-| CART ROUTES
-|--------------------------------------------------------------------------
-*/
 
 Route::middleware('auth')->group(function () {
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
@@ -54,11 +39,6 @@ Route::middleware('auth')->group(function () {
     Route::delete('/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
 });
 
-/*
-|--------------------------------------------------------------------------
-| ORDER / CHECKOUT ROUTES
-|--------------------------------------------------------------------------
-*/
 
 Route::middleware('auth')->group(function () {
     Route::get('/checkout', [OrderController::class, 'checkout'])->name('checkout');
@@ -69,11 +49,6 @@ Route::middleware('auth')->group(function () {
     Route::post('/orders/{orderId}/review/{productId}', [OrderController::class, 'review'])->name('orders.review');
 });
 
-/*
-|--------------------------------------------------------------------------
-| PAYMENT ROUTES
-|--------------------------------------------------------------------------
-*/
 
 Route::middleware('auth')->group(function () {
     Route::get('/payments/simulate/{order}', [\App\Http\Controllers\PaymentController::class, 'simulatePage'])
@@ -90,11 +65,6 @@ Route::middleware('auth')->group(function () {
 Route::post('/webhooks/paymongo', [\App\Http\Controllers\PaymentController::class, 'webhook'])
     ->name('webhooks.paymongo');
 
-/*
-|--------------------------------------------------------------------------
-| ARTISAN ROUTES
-|--------------------------------------------------------------------------
-*/
 
 Route::middleware(['auth', 'artisan'])->prefix('artisan')->name('artisan.')->group(function () {
     Route::get('/dashboard', [ArtisanController::class, 'dashboard'])->name('dashboard');
@@ -111,11 +81,6 @@ Route::middleware(['auth', 'artisan'])->prefix('artisan')->name('artisan.')->gro
     Route::patch('/orders/{orderId}/status', [ArtisanController::class, 'updateOrderStatus'])->name('orders.status');
 });
 
-/*
-|--------------------------------------------------------------------------
-| ADMIN ROUTES
-|--------------------------------------------------------------------------
-*/
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');

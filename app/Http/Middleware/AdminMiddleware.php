@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 /**
  * AdminMiddleware
- * Ensures only admin users can access admin routes.
+ * Ensures only admin users can access admin routes.jkjkbkjbj
  */
 class AdminMiddleware
 {

@@ -17,7 +17,7 @@
 
                 {{-- Delivery Details --}}
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-                    <h2 class="font-semibold text-lg text-gray-900 mb-5">📦 Delivery Details</h2>
+                    <h2 class="font-semibold text-lg text-gray-900 mb-5">Delivery Details</h2>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="md:col-span-2">
@@ -67,13 +67,13 @@
 
                 {{-- Payment Method --}}
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6" x-data="{ payment: 'cod' }">
-                    <h2 class="font-semibold text-lg text-gray-900 mb-5">💳 Payment Method</h2>
+                    <h2 class="font-semibold text-lg text-gray-900 mb-5">Payment Method</h2>
 
                     <div class="space-y-3">
                         @foreach([
-                            ['cod', '💵', 'Cash on Delivery', 'Pay when your order arrives'],
-                            ['gcash', '📱', 'GCash', 'Mobile wallet payment (simulation)'],
-                            ['bank_transfer', '🏦', 'Bank Transfer', 'Direct bank deposit (simulation)'],
+                            ['cod', '', 'Cash on Delivery', 'Pay when your order arrives'],
+                            ['gcash', '', 'GCash', 'Mobile wallet payment (simulation)'],
+                            ['bank_transfer', '', 'Bank Transfer', 'Direct bank deposit (simulation)'],
                         ] as [$value, $icon, $label, $desc])
                             <label class="cursor-pointer">
                                 <input type="radio" name="payment_method" value="{{ $value }}" x-model="payment" class="sr-only">
@@ -95,7 +95,7 @@
 
                 {{-- Notes --}}
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-                    <h2 class="font-semibold text-lg text-gray-900 mb-3">📝 Order Notes (Optional)</h2>
+                    <h2 class="font-semibold text-lg text-gray-900 mb-3">Order Notes (Optional)</h2>
                     <textarea name="notes" rows="3"
                               class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400"
                               placeholder="Any special instructions for the artisan or delivery...">{{ old('notes') }}</textarea>
@@ -139,7 +139,7 @@
 
                     <button type="submit"
                             class="block w-full text-center bg-brand-700 text-white font-bold py-3 rounded-xl hover:bg-brand-800 transition hover:shadow-lg mt-5">
-                        Place Order 🎉
+                        Place Order
                     </button>
 
                     <p class="text-xs text-gray-400 text-center mt-3">

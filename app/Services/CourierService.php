@@ -84,11 +84,6 @@ class CourierService
         return $this->calculateFeeSimulated($province, $weightKg);
     }
 
-    // ─────────────────────────────────────────
-    // SIMULATED IMPLEMENTATION
-    // Mirrors J&T Express API response structure exactly.
-    // Replace these methods with real HTTP calls when credentials are available.
-    // ─────────────────────────────────────────
 
     private function bookSimulated(Order $order): array
     {
@@ -201,15 +196,11 @@ class CourierService
         return round($base + $weightExtra, 2);
     }
 
-    // ─────────────────────────────────────────
-    // REAL API STUBS
-    // Uncomment & fill in when you have real credentials.
-    // ─────────────────────────────────────────
+
 
     private function bookReal(Order $order): array
     {
-        // J&T Express Philippines API
-        // Docs: https://www.jtexpressph.com/developer
+      
         $response = Http::withHeaders([
             'Authorization' => 'Bearer ' . config('services.courier.api_key'),
             'Content-Type'  => 'application/json',

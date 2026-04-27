@@ -10,7 +10,7 @@
         {{-- PayMongo-style header --}}
         <div class="text-center mb-6">
             <div class="inline-flex items-center gap-2 bg-white border border-gray-200 rounded-full px-4 py-2 text-sm text-gray-600 mb-4">
-                🔒 Secure Payment · Powered by
+                Secure Payment · Powered by
                 <span class="font-bold text-blue-600">PayMongo</span>
                 <span class="text-xs text-gray-400">(Simulated)</span>
             </div>
@@ -66,7 +66,7 @@
                                class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400">
                     </div>
                     <div class="bg-blue-50 border border-blue-200 rounded-xl p-3 text-sm text-blue-700">
-                        📱 In production, you would be redirected to GCash to approve the payment. This simulation skips that step.
+                             In production, you would be redirected to GCash to approve the payment. This simulation skips that step.
                     </div>
                 </div>
             @endif
@@ -105,18 +105,18 @@
                         @click="processing = true"
                         class="w-full bg-blue-600 text-white font-bold py-4 rounded-xl hover:bg-blue-700 transition-all disabled:opacity-60 disabled:cursor-wait text-lg">
                     <span x-show="!processing">
-                        @if($order->payment_method === 'gcash') 📱 Pay with GCash
-                        @elseif($order->payment_method === 'maya') 💳 Pay with Maya
-                        @elseif($order->payment_method === 'bank_transfer') ✅ Confirm Transfer
-                        @else 💳 Pay ₱{{ number_format($order->total_amount, 2) }}
+                        @if($order->payment_method === 'gcash')  Pay with GCash
+                        @elseif($order->payment_method === 'maya')  Pay with Maya
+                        @elseif($order->payment_method === 'bank_transfer') Confirm Transfer
+                        @else  Pay ₱{{ number_format($order->total_amount, 2) }}
                         @endif
                     </span>
-                    <span x-show="processing">⏳ Processing…</span>
+                    <span x-show="processing"> Processing…</span>
                 </button>
             </form>
 
             <p class="text-center text-xs text-gray-400 mt-4">
-                🔒 This is a simulated payment page. No real money is charged.
+                This is a simulated payment page. No real money is charged.
                 @if($methodInfo['provider'] === 'paymongo')
                     In production, users would be redirected to PayMongo's secure hosted page.
                 @endif

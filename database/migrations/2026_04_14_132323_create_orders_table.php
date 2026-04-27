@@ -34,10 +34,7 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Creates the orders table.
-     * Tracks all customer purchases with logistics/delivery info.
-     */
+
     public function up(): void
     {
         Schema::create('orders', function (Blueprint $table) {
@@ -63,11 +60,11 @@ return new class extends Migration
             
             // Order status - logistics tracking
             $table->enum('status', [
-                'pending',      // Just placed
-                'processing',   // Artisan preparing
-                'shipped',      // In transit
-                'delivered',    // Received by customer
-                'cancelled'     // Cancelled
+                'pending',      
+                'processing',   
+                'shipped',      
+                'delivered',    
+                'cancelled'     
             ])->default('pending');
             
             // Financial
@@ -76,10 +73,10 @@ return new class extends Migration
             $table->decimal('total_amount', 10, 2);
             
             // Logistics simulation
-            $table->string('courier_name')->nullable();          // e.g., J&T Express
+            $table->string('courier_name')->nullable();          
             $table->string('tracking_number')->nullable();
             $table->timestamp('estimated_delivery')->nullable();
-            $table->text('notes')->nullable();                   // Customer notes
+            $table->text('notes')->nullable();                   
             
             // Status timestamps for tracking history
             $table->timestamp('processing_at')->nullable();
@@ -90,9 +87,7 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
+
     public function down(): void
     {
         Schema::dropIfExists('orders');

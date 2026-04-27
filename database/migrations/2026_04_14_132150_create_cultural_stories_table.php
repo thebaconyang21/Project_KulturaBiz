@@ -52,11 +52,11 @@ return new class extends Migration
             // Story content
             $table->string('title');
             $table->string('slug')->unique();
-            $table->text('story');                      // Main cultural narrative
-            $table->string('tribe_community');          // e.g., Maranao, T'boli, Tausug
-            $table->string('location');                 // Specific area in Mindanao
-            $table->string('cultural_significance')->nullable(); // Why it matters
-            $table->text('historical_background')->nullable();   // Historical context
+            $table->text('story');                      
+            $table->string('tribe_community');         
+            $table->string('location');                 
+            $table->string('cultural_significance')->nullable(); 
+            $table->text('historical_background')->nullable();   
             
             // Media
             $table->string('cover_image')->nullable();
@@ -70,9 +70,6 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('cultural_stories');

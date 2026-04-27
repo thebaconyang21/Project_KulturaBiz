@@ -133,9 +133,6 @@ class User extends Authenticatable
         return $this->status === 'approved';
     }
 
-    // ==========================================
-    // RELATIONSHIPS
-    // ==========================================
 
     /**
      * Products created by this artisan.
@@ -169,9 +166,6 @@ class User extends Authenticatable
         return $this->hasMany(Review::class);
     }
 
-    // ==========================================
-    // HELPER METHODS
-    // ==========================================
 
     /**
      * Get the profile photo URL or a placeholder.

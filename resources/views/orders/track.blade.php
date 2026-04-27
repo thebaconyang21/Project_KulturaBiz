@@ -32,12 +32,12 @@
         </div>
         @if($order->estimated_delivery && $order->status !== 'delivered' && $order->status !== 'cancelled')
             <div class="bg-white/10 rounded-xl px-4 py-2 text-sm">
-                📅 Estimated delivery: <strong>{{ $order->estimated_delivery->format('F d, Y') }}</strong>
+                Estimated delivery: <strong>{{ $order->estimated_delivery->format('F d, Y') }}</strong>
             </div>
         @endif
         @if($order->status === 'delivered' && $order->delivered_at)
             <div class="bg-green-500/20 rounded-xl px-4 py-2 text-sm text-green-200">
-                ✅ Delivered on {{ $order->delivered_at->format('F d, Y') }}
+                Delivered on {{ $order->delivered_at->format('F d, Y') }}
             </div>
         @endif
     </div>
@@ -140,7 +140,7 @@
                     <p class="font-medium text-sm mb-3">{{ $item->product_name }}</p>
                     @if($existingReview)
                         <div class="text-accent">{{ $existingReview->stars }}</div>
-                        <p class="text-xs text-green-600 mt-1">✅ You've reviewed this product</p>
+                        <p class="text-xs text-green-600 mt-1">You've reviewed this product</p>
                     @else
                         <form method="POST" action="{{ route('orders.review', [$order->id, $item->product_id]) }}" x-data="{ rating: 5 }">
                             @csrf

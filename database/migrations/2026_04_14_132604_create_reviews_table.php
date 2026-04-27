@@ -34,9 +34,7 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Creates the reviews table for product ratings and feedback.
-     */
+
     public function up(): void
     {
         Schema::create('reviews', function (Blueprint $table) {
@@ -46,7 +44,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('order_id')->constrained()->onDelete('cascade');
             
-            $table->integer('rating');              // 1-5 stars
+            $table->integer('rating');              
             $table->string('title')->nullable();
             $table->text('comment')->nullable();
             
@@ -54,14 +52,11 @@ return new class extends Migration
             
             $table->timestamps();
             
-            // One review per product per order
+            
             $table->unique(['product_id', 'user_id', 'order_id']);
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('reviews');

@@ -8,7 +8,7 @@
 
     {{-- Success Animation --}}
     <div class="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 text-5xl">
-        🎉
+        
     </div>
 
     <h1 class="font-display text-3xl font-bold text-gray-900 mb-3">Order Confirmed!</h1>
@@ -50,7 +50,7 @@
 
         {{-- Logistics info --}}
         <div class="mt-5 bg-brand-50 rounded-xl p-4 text-sm">
-            <p class="font-semibold text-brand-800 mb-2">📦 Delivery Information</p>
+            <p class="font-semibold text-brand-800 mb-2">Delivery Information</p>
             <p class="text-gray-600">Courier: <strong>{{ $order->courier_name }}</strong></p>
             <p class="text-gray-600">Tracking: <strong>{{ $order->tracking_number }}</strong></p>
             <p class="text-gray-600">Estimated Arrival: <strong>{{ $order->estimated_delivery->format('F d, Y') }}</strong></p>
@@ -70,7 +70,7 @@
     </div>
 
     <p class="text-xs text-gray-400 mt-8">
-        💌 A confirmation summary has been added to your order history.
+        A confirmation summary has been added to your order history.
     </p>
 </div>
 

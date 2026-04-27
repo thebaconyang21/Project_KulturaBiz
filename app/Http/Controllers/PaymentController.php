@@ -61,9 +61,7 @@ class PaymentController extends Controller
         return view('payments.simulate', compact('order', 'methodInfo'));
     }
 
-    /**
-     * Simulated payment process
-     */
+
     public function processSimulated(Request $request, Order $order)
     {
         if ($order->user_id !== Auth::id()) {
@@ -87,9 +85,7 @@ class PaymentController extends Controller
         ])->with('error', 'Payment failed.');
     }
 
-    /**
-     * PayMongo callback
-     */
+
     public function callback(Request $request, Order $order)
     {
         $intentId = $request->query('payment_intent_id')
@@ -113,9 +109,7 @@ class PaymentController extends Controller
             ->with('error', 'Payment not completed.');
     }
 
-    /**
-     * PayMongo webhook
-     */
+
     public function webhook(Request $request)
     {
         $signature = $request->header('Paymongo-Signature');
@@ -138,9 +132,6 @@ class PaymentController extends Controller
         return response()->json(['received' => true]);
     }
 
-    // ================================
-    // PRIVATE METHODS
-    // ================================
 
     private function finalizeOrder(Order $order, ?string $intentId = null): void
     {

@@ -50,9 +50,6 @@ class Order extends Model
         'delivered_at' => 'datetime',
     ];
 
-    // ==========================================
-    // RELATIONSHIPS
-    // ==========================================
 
     /**
      * The customer who placed this order.

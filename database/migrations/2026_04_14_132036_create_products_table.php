@@ -32,10 +32,7 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Creates the products table.
-     * Each product belongs to an artisan and a category.
-     */
+    
     public function up(): void
     {
         Schema::create('products', function (Blueprint $table) {
@@ -56,9 +53,9 @@ return new class extends Migration
             $table->json('images')->nullable();
             
             // Cultural documentation fields
-            $table->text('cultural_background')->nullable();    // Story/heritage info
-            $table->string('origin_location')->nullable();     // Where in Mindanao
-            $table->text('materials_used')->nullable();        // e.g., Malong fiber, bamboo
+            $table->text('cultural_background')->nullable();   
+            $table->string('origin_location')->nullable();     
+            $table->text('materials_used')->nullable();       
             
             // Status
             $table->enum('status', ['active', 'inactive', 'out_of_stock'])->default('active');
