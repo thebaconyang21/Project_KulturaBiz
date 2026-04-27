@@ -69,7 +69,9 @@ class DashboardController extends Controller
         ));
     }
 
-
+    // ==========================================
+    // USER MANAGEMENT
+    // ==========================================
 
     public function users(Request $request)
     {
@@ -114,7 +116,9 @@ class DashboardController extends Controller
         return back()->with('success', 'User deleted.');
     }
 
-
+    // ==========================================
+    // PRODUCT MANAGEMENT
+    // ==========================================
 
     public function products(Request $request)
     {
@@ -138,7 +142,9 @@ class DashboardController extends Controller
         return back()->with('success', 'Product deleted.');
     }
 
-
+    // ==========================================
+    // CATEGORY MANAGEMENT
+    // ==========================================
 
     public function categories()
     {
@@ -168,6 +174,9 @@ class DashboardController extends Controller
         return back()->with('success', 'Category deleted.');
     }
 
+    // ==========================================
+    // ORDER MANAGEMENT
+    // ==========================================
 
     public function orders(Request $request)
     {

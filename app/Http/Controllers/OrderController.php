@@ -6,38 +6,49 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\Review;
+use App\Services\PaymentService;
+use App\Services\CourierService;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
+/**
+ * OrderController
+ * Handles checkout, order placement, tracking, and reviews.
+ * Now wired to PaymentService, CourierService, and NotificationService.
+ */
 class OrderController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
+    public function __construct(
+        private PaymentService      $payment,
+        private CourierService      $courier,
+        private NotificationService $notify,
+    ) {}
 
-    /**
-     * Show the checkout page.
-     */
     public function checkout()
     {
         $cart = session()->get('cart', []);
-
         if (empty($cart)) {
             return redirect()->route('cart.index')->with('error', 'Your cart is empty.');
         }
 
         $subtotal    = collect($cart)->sum(fn($i) => $i['price'] * $i['quantity']);
+        // Calculate shipping fee based on province if available, otherwise flat rate
         $shippingFee = 150.00;
         $total       = $subtotal + $shippingFee;
 
-        return view('orders.checkout', compact('cart', 'subtotal', 'shippingFee', 'total'));
+        // Get available payment methods
+        $paymentMethods = [
+            'cod'           => ['label' => 'Cash on Delivery',  'icon' => '💵', 'desc' => 'Pay when your order arrives'],
+            'gcash'         => ['label' => 'GCash',             'icon' => '📱', 'desc' => 'Mobile wallet (PayMongo)'],
+            'maya'          => ['label' => 'Maya',              'icon' => '💳', 'desc' => 'Maya wallet (PayMongo)'],
+            'bank_transfer' => ['label' => 'Bank Transfer',     'icon' => '🏦', 'desc' => 'Direct bank deposit'],
+        ];
+
+        return view('orders.checkout', compact('cart', 'subtotal', 'shippingFee', 'total', 'paymentMethods'));
     }
 
-    /**
-     * Place the order.
-     */
     public function placeOrder(Request $request)
     {
         $request->validate([
@@ -47,51 +58,49 @@ class OrderController extends Controller
             'city'             => 'required|string|max:100',
             'province'         => 'required|string|max:100',
             'postal_code'      => 'nullable|string|max:10',
-            'payment_method'   => 'required|in:cod,gcash,bank_transfer',
+            'payment_method'   => 'required|in:cod,gcash,maya,bank_transfer',
             'notes'            => 'nullable|string|max:500',
         ]);
 
         $cart = session()->get('cart', []);
-
         if (empty($cart)) {
             return redirect()->route('cart.index')->with('error', 'Your cart is empty.');
         }
 
-        // Check stock
+        // Validate stock
         foreach ($cart as $productId => $item) {
             $product = Product::find($productId);
             if (!$product || $product->stock < $item['quantity']) {
-                return back()->with('error', "'{$item['name']}' is not available.");
+                return back()->with('error', "'{$item['name']}' is no longer available in the requested quantity.");
             }
         }
 
-        DB::transaction(function () use ($request, $cart) {
+        $order = null;
 
+        DB::transaction(function () use ($request, $cart, &$order) {
             $subtotal    = collect($cart)->sum(fn($i) => $i['price'] * $i['quantity']);
-            $shippingFee = 150.00;
+
+            // Get dynamic shipping fee from courier service
+            $shippingFee = $this->courier->calculateFee($request->province);
             $total       = $subtotal + $shippingFee;
 
-            $couriers = ['J&T Express', 'LBC Express', 'Ninja Van', '2GO Express', 'Flash Express'];
-
             $order = Order::create([
-                'user_id'           => Auth::id(),
-                'order_number'      => Order::generateOrderNumber(),
-                'recipient_name'    => $request->recipient_name,
-                'delivery_address'  => $request->delivery_address,
-                'contact_number'    => $request->contact_number,
-                'city'              => $request->city,
-                'province'          => $request->province,
-                'postal_code'       => $request->postal_code,
-                'payment_method'    => $request->payment_method,
-                'payment_status'    => 'pending',
-                'status'            => 'pending',
-                'subtotal'          => $subtotal,
-                'shipping_fee'      => $shippingFee,
-                'total_amount'      => $total,
-                'courier_name'      => $couriers[array_rand($couriers)],
-                'tracking_number'   => 'KB' . strtoupper(substr(md5(uniqid()), 0, 10)),
-                'estimated_delivery'=> now()->addDays(rand(5, 10)),
-                'notes'             => $request->notes,
+                'user_id'          => Auth::id(),
+                'order_number'     => Order::generateOrderNumber(),
+                'recipient_name'   => $request->recipient_name,
+                'delivery_address' => $request->delivery_address,
+                'contact_number'   => $request->contact_number,
+                'city'             => $request->city,
+                'province'         => $request->province,
+                'postal_code'      => $request->postal_code,
+                'payment_method'   => $request->payment_method,
+                'payment_status'   => 'pending',
+                'status'           => 'pending',
+                'subtotal'         => $subtotal,
+                'shipping_fee'     => $shippingFee,
+                'total_amount'     => $total,
+                'notes'            => $request->notes,
+                // Courier details filled in by PaymentController::finalizeOrder()
             ]);
 
             foreach ($cart as $productId => $item) {
@@ -103,25 +112,17 @@ class OrderController extends Controller
                     'quantity'     => $item['quantity'],
                     'subtotal'     => $item['price'] * $item['quantity'],
                 ]);
-
-                Product::where('id', $productId)
-                    ->decrement('stock', $item['quantity']);
+                Product::where('id', $productId)->decrement('stock', $item['quantity']);
             }
 
             session()->forget('cart');
-            session()->put('last_order_id', $order->id);
         });
 
-        $orderId = session()->pull('last_order_id');
-
-        return redirect()->route('orders.confirmation', $orderId)
-            ->with('success', 'Order placed successfully!');
+        // Hand off to PaymentController to handle gateway + courier booking + notifications
+        return app(PaymentController::class)->initiate($order);
     }
 
-    /**
-     * Order confirmation
-     */
-    public function confirmation($orderId)
+    public function confirmation(string $orderId)
     {
         $order = Order::with('items.product', 'customer')
             ->where('id', $orderId)
@@ -131,9 +132,6 @@ class OrderController extends Controller
         return view('orders.confirmation', compact('order'));
     }
 
-    /**
-     * My orders
-     */
     public function myOrders()
     {
         $orders = Order::where('user_id', Auth::id())
@@ -144,23 +142,20 @@ class OrderController extends Controller
         return view('orders.my-orders', compact('orders'));
     }
 
-    /**
-     * Track order
-     */
-    public function track($orderId)
+    public function track(string $orderId)
     {
         $order = Order::with(['items.product', 'items.product.artisan'])
             ->where('id', $orderId)
             ->where('user_id', Auth::id())
             ->firstOrFail();
 
-        return view('orders.track', compact('order'));
+        // Fetch live tracking events from courier service
+        $trackingEvents = $this->courier->track($order);
+
+        return view('orders.track', compact('order', 'trackingEvents'));
     }
 
-    /**
-     * Submit review
-     */
-    public function review(Request $request, $orderId, $productId)
+    public function review(Request $request, string $orderId, string $productId)
     {
         $request->validate([
             'rating'  => 'required|integer|between:1,5',
@@ -176,16 +171,8 @@ class OrderController extends Controller
         $order->items()->where('product_id', $productId)->firstOrFail();
 
         Review::updateOrCreate(
-            [
-                'product_id' => $productId,
-                'user_id'    => Auth::id(),
-                'order_id'   => $orderId
-            ],
-            [
-                'rating'  => $request->rating,
-                'title'   => $request->title,
-                'comment' => $request->comment,
-            ]
+            ['product_id' => $productId, 'user_id' => Auth::id(), 'order_id' => $orderId],
+            ['rating' => $request->rating, 'title' => $request->title, 'comment' => $request->comment]
         );
 
         Product::find($productId)?->updateRating();
