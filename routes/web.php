@@ -50,18 +50,22 @@ Route::middleware('auth')->group(function () {
 });
 
 
+
 Route::middleware('auth')->group(function () {
+    // Simulated payment checkout page (mirrors PayMongo hosted page)
     Route::get('/payments/simulate/{order}', [\App\Http\Controllers\PaymentController::class, 'simulatePage'])
         ->name('payments.simulate');
 
+    // Process the simulated payment (user clicks Pay Now)
     Route::post('/payments/process/{order}', [\App\Http\Controllers\PaymentController::class, 'processSimulated'])
         ->name('payments.process');
 
+    // PayMongo callback after real GCash/Maya redirect
     Route::get('/payments/callback/{order}', [\App\Http\Controllers\PaymentController::class, 'callback'])
         ->name('payments.callback');
 });
 
-// webhook must be OUTSIDE auth
+// PayMongo webhook (no auth — signed by PayMongo)
 Route::post('/webhooks/paymongo', [\App\Http\Controllers\PaymentController::class, 'webhook'])
     ->name('webhooks.paymongo');
 
