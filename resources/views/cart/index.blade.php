@@ -9,7 +9,7 @@
 
     @if(empty($cart))
         <div class="text-center py-24">
-            <div class="text-7xl mb-4"></div>
+            <div class="mb-4"><i class="fa-solid fa-cart-shopping text-6xl text-gray-300"></i></div>
             <h3 class="text-xl font-semibold text-gray-600 mb-2">Your cart is empty</h3>
             <p class="text-gray-400 mb-6">Browse our collection of handcrafted products</p>
             <a href="{{ route('products.index') }}"
@@ -50,7 +50,7 @@
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="text-red-400 hover:text-red-600 text-sm transition">
-                                            🗑 Remove
+                                            <i class="fa-solid fa-trash-can"></i> Remove<!-- 🗑 Remove -->
                                         </button>
                                     </form>
                                 </div>
