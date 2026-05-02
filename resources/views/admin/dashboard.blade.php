@@ -39,10 +39,10 @@
         {{-- STATS CARDS --}}
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
             @foreach([
-                ['Total Revenue', '₱' . number_format($totalRevenue, 2), <i class="fa-solid fa-peso-sign"></i>, 'text-green-600', 'bg-green-50'],
-                ['Total Orders', $totalOrders, <i class="fa-solid fa-box"></i>, 'text-blue-600', 'bg-blue-50'],
-                ['Artisans', $totalArtisans,  <i class="fa-solid fa-palette"></i>, 'text-brand-600', 'bg-brand-50'],
-                ['Customers', $totalCustomers, <i class="fa-solid fa-users"></i>, 'text-purple-600', 'bg-purple-50'],
+                ['Total Revenue', '₱' . number_format($totalRevenue, 2), 'peso-sign', 'text-green-600', 'bg-green-50'],
+                ['Total Orders', $totalOrders, 'box', 'text-blue-600', 'bg-blue-50'],
+                ['Artisans', $totalArtisans,  'palette', 'text-brand-600', 'bg-brand-50'],
+                ['Customers', $totalCustomers, 'users', 'text-purple-600', 'bg-purple-50'],
             ] as [$label, $value, $icon, $color, $bg])
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
                     <div class="flex items-center justify-between mb-3">
