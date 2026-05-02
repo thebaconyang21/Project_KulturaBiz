@@ -56,7 +56,7 @@
                         {{-- Icon circle --}}
                         <div class="relative z-10 w-12 h-12 rounded-full flex items-center justify-center text-lg shrink-0
                             {{ $step['current'] ? 'bg-brand-700 text-white ring-4 ring-brand-200' : ($step['completed'] ? 'bg-brand-100 text-brand-700' : 'bg-gray-100 text-gray-400') }}">
-                            {{ $step['icon'] }}
+                            <i class="fa-solid fa-{{ $step['icon'] }} text-lg"></i>
                         </div>
                         <div class="pt-2">
                             <p class="font-semibold {{ $step['completed'] ? 'text-gray-900' : 'text-gray-400' }}">
