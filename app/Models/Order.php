@@ -135,10 +135,10 @@ class Order extends Model
     public function getTrackingStepsAttribute(): array
     {
         $steps = [
-            ['key' => 'pending',    'label' => 'Order Placed',   'icon' => '📦', 'time' => $this->created_at],
-            ['key' => 'processing', 'label' => 'Processing',     'icon' => '🔨', 'time' => $this->processing_at],
-            ['key' => 'shipped',    'label' => 'Shipped',        'icon' => '🚚', 'time' => $this->shipped_at],
-            ['key' => 'delivered',  'label' => 'Delivered',      'icon' => '✅', 'time' => $this->delivered_at],
+            ['key' => 'pending',    'label' => 'Order Placed',   'icon' => 'box', 'time' => $this->created_at],
+            ['key' => 'processing', 'label' => 'Processing',     'icon' => 'gear', 'time' => $this->processing_at],
+            ['key' => 'shipped',    'label' => 'Shipped',        'icon' => 'truck', 'time' => $this->shipped_at],
+            ['key' => 'delivered',  'label' => 'Delivered',      'icon' => 'circle-check', 'time' => $this->delivered_at],
         ];
 
         $statusOrder = ['pending', 'processing', 'shipped', 'delivered'];
