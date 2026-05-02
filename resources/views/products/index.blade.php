@@ -101,12 +101,12 @@
                                 <h3 class="font-semibold text-gray-900 mb-1 line-clamp-1 group-hover:text-brand-700 transition">{{ $product->name }}</h3>
                                 <p class="text-xs text-gray-400 mb-1">by {{ $product->artisan->name }}</p>
                                 @if($product->origin_location)
-                                    <p class="text-xs text-brand-500 mb-2">📍 {{ $product->origin_location }}</p>
+                                    <p class="text-xs text-brand-500 mb-2"><i class="fa-solid fa-location-dot text-brand-500"></i> {{ $product->origin_location }}</p>
                                 @endif
 
                                 @if($product->review_count > 0)
                                     <div class="flex items-center gap-1 mb-2">
-                                        <span class="text-accent text-sm">★</span>
+                                        <i class="fa-solid fa-star text-accent"></i>
                                         <span class="text-sm font-medium text-gray-700">{{ number_format($product->average_rating, 1) }}</span>
                                         <span class="text-gray-400 text-xs">({{ $product->review_count }} reviews)</span>
                                     </div>
