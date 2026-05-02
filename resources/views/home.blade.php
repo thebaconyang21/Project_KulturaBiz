@@ -71,13 +71,26 @@
                 <div class="w-12 h-12 bg-brand-50 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:bg-brand-100 transition">
                     <span class="text-2xl">
                         @switch($category->slug)
-                            @case('textiles')  @break {{--dapat icon ni dinhi--}}
-                            @case('baskets')  @break
-                            @case('accessories')  @break
-                            @case('woodcrafts') @break
-                            @case('bags')  @break
-                            @case('homedecor')  @break
-                            @default 
+                            @case('textiles')
+                                <i class="fa-solid fa-shirt text-brand-600 text-2xl"></i>
+                                @break
+                            @case('baskets')
+                                <i class="fa-solid fa-basket-shopping text-brand-600 text-2xl"></i>
+                                @break
+                            @case('accessories')
+                                <i class="fa-solid fa-gem text-brand-600 text-2xl"></i>
+                                @break
+                            @case('woodcrafts')
+                                <i class="fa-solid fa-hammer text-brand-600 text-2xl"></i>
+                                @break
+                            @case('bags')
+                                <i class="fa-solid fa-bag-shopping text-brand-600 text-2xl"></i>
+                                @break
+                            @case('homedecor')
+                                <i class="fa-solid fa-house-chimney text-brand-600 text-2xl"></i>
+                                @break
+                            @default
+                                <i class="fa-solid fa-paintbrush text-brand-600 text-2xl"></i>
                         @endswitch
                     </span>
                 </div>
@@ -130,7 +143,7 @@
                         {{-- Rating --}}
                         @if($product->review_count > 0)
                             <div class="flex items-center gap-1 mb-2">
-                                <span class="text-accent text-sm">★</span>
+                                <i class="fa-solid fa-star text-accent text-sm"></i><!-- <span class="text-accent text-sm">★</span> -->
                                 <span class="text-sm font-medium">{{ number_format($product->average_rating, 1) }}</span>
                                 <span class="text-gray-400 text-xs">({{ $product->review_count }})</span>
                             </div>
