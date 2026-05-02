@@ -5,7 +5,7 @@
 @section('content')
 
 {{-- HERO SECTIONnnnnn --}}
-<section class="bg-brand-700 hero-pattern text-white py-24 relative overflow-hidden">
+<section class="text-white py-24 relative overflow-hidden" style="background: url('{{ asset('images/hero-bg.jpg') }}') center center / cover no-repeat;">
     <div class="absolute inset-0 bg-gradient-to-br from-brand-900/80 to-brand-600/60"></div>
     <div class="max-w-7xl mx-auto px-4 relative z-10">
         <div class="max-w-3xl">

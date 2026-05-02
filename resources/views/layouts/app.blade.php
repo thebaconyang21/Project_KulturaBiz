@@ -6,6 +6,9 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'KulturaBiz') — Digital Marketplace for Mindanaoan Artisans</title>
 
+    {{-- Font Awesome 6 (Real Professional Icons) --}}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
     {{-- Google Fonts --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -82,7 +85,7 @@
                         {{-- Cart --}}
                         @if(auth()->user()->isCustomer())
                             <a href="{{ route('cart.index') }}" class="relative hover:text-accent transition">
-                                🛒
+                                <i class="fa-solid fa-cart-shopping"></i>
                                 @php $cartCount = collect(session()->get('cart', []))->sum('quantity'); @endphp
                                 @if($cartCount > 0)
                                     <span class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">{{ $cartCount }}</span>
@@ -94,7 +97,7 @@
                         <div class="relative" x-data="{ open: false }">
                             <button @click="open = !open" class="flex items-center gap-2 hover:text-accent transition">
                                 <img src="{{ auth()->user()->profile_photo_url }}" alt="" class="w-7 h-7 rounded-full border border-accent">
-                                {{ auth()->user()->name }} ▾
+                                {{ auth()->user()->name }} <i class="fa-solid fa-chevron-down text-xs ml-1"></i>
                             </button>
                             <div x-show="open" @click.away="open = false"
                                  class="absolute right-0 mt-2 w-48 bg-white text-gray-800 rounded-lg shadow-xl border border-gray-100 py-1 z-50">
@@ -124,9 +127,7 @@
 
                 {{-- Mobile Menu Toggle --}}
                 <button @click="mobileOpen = !mobileOpen" class="md:hidden text-white">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-                    </svg>
+                        <i class="fa-solid fa-bars text-xl"></i>
                 </button>
             </div>
         </div>
