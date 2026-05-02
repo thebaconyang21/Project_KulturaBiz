@@ -84,7 +84,7 @@
                                          class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                                 @else
                                     <div class="w-full h-full flex items-center justify-center">
-                                        <span class="text-6xl opacity-30"></span>
+                                        <i class="fa-solid fa-paintbrush opacity-30 text-5xl text-brand-400"></i>
                                     </div>
                                 @endif
                                 <span class="absolute top-3 left-3 bg-white/90 text-brand-700 text-xs font-semibold px-2 py-1 rounded-full">
@@ -130,7 +130,7 @@
 
             @else
                 <div class="text-center py-24 text-gray-400">
-                    <div class="text-6xl mb-4">🔍</div>
+                    <div class="mb-4"><i class="fa-solid fa-magnifying-glass text-5xl text-gray-300"></i></div>
                     <h3 class="text-xl font-semibold mb-2">No products found</h3>
                     <p class="text-sm">Try adjusting your search or filters.</p>
                     <a href="{{ route('products.index') }}" class="mt-4 inline-block text-brand-600 hover:underline text-sm">Clear all filters</a>
