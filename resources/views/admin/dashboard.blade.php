@@ -23,7 +23,7 @@
                 <a href="{{ route($route) }}"
                    class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition
                           {{ request()->routeIs($route) ? 'bg-brand-700 text-white font-semibold' : 'text-brand-200 hover:bg-brand-800 hover:text-white' }}">
-                    {{ $icon }} {{ $label }}
+                    <i class="fa-solid fa-{{ $icon }} text-xl"></i> {{ $label }}
                 </a>
             @endforeach
         </nav>
@@ -39,15 +39,15 @@
         {{-- STATS CARDS --}}
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
             @foreach([
-                ['Total Revenue', '₱' . number_format($totalRevenue, 2), '💰', 'text-green-600', 'bg-green-50'],
-                ['Total Orders', $totalOrders, '📦', 'text-blue-600', 'bg-blue-50'],
-                ['Artisans', $totalArtisans, '🎨', 'text-brand-600', 'bg-brand-50'],
-                ['Customers', $totalCustomers, '👥', 'text-purple-600', 'bg-purple-50'],
+                ['Total Revenue', '₱' . number_format($totalRevenue, 2), <i class="fa-solid fa-peso-sign"></i>, 'text-green-600', 'bg-green-50'],
+                ['Total Orders', $totalOrders, <i class="fa-solid fa-box"></i>, 'text-blue-600', 'bg-blue-50'],
+                ['Artisans', $totalArtisans,  <i class="fa-solid fa-palette"></i>, 'text-brand-600', 'bg-brand-50'],
+                ['Customers', $totalCustomers, <i class="fa-solid fa-users"></i>, 'text-purple-600', 'bg-purple-50'],
             ] as [$label, $value, $icon, $color, $bg])
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
                     <div class="flex items-center justify-between mb-3">
                         <span class="text-gray-500 text-sm">{{ $label }}</span>
-                        <div class="w-10 h-10 {{ $bg }} rounded-xl flex items-center justify-center text-xl">{{ $icon }}</div>
+                        <div class="w-10 h-10 {{ $bg }} rounded-xl flex items-center justify-center text-xl"><i class="fa-solid fa-{{ $icon }} text-xl"></i></div>
                     </div>
                     <div class="font-display text-2xl font-bold {{ $color }}">{{ $value }}</div>
                 </div>
@@ -79,7 +79,7 @@
                 @foreach(['pending' => '', 'processing' => '', 'shipped' => '', 'delivered' => '', 'cancelled' => ''] as $status => $icon)
                     @php $count = $ordersByStatus[$status] ?? 0; @endphp
                     <div class="flex items-center gap-3 py-2 border-b border-gray-50 last:border-0">
-                        <span class="text-lg">{{ $icon }}</span>
+                        <span class="text-lg"><i class="fa-solid fa-{{ $icon }} text-xl"></i></span>
                         <span class="flex-1 text-sm text-gray-600 capitalize">{{ $status }}</span>
                         <span class="font-bold text-gray-900">{{ $count }}</span>
                         <div class="w-24 bg-gray-100 rounded-full h-2">
