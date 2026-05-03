@@ -6,7 +6,7 @@
 
 {{-- HERO SECTIONnnnnn --}}
 <section class="text-white py-24 relative overflow-hidden" style="background: url('{{ asset('images/hero-bg.jpg') }}') center center / cover no-repeat;">
-    <div class="absolute inset-0 bg-gradient-to-br from-brand-900/80 to-brand-600/60"></div>
+    <div class="absolute inset-0" style="background: linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.65) 100%);"></div>
     <div class="max-w-7xl mx-auto px-4 relative z-10">
         <div class="max-w-3xl">
             <p class="text-accent font-medium tracking-widest uppercase text-sm mb-4">✦ Mindanaoan Heritage Marketplace</p>
