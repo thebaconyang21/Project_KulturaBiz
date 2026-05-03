@@ -111,10 +111,10 @@
                                     <a href="{{ route('orders.mine') }}" class="block px-4 py-2 hover:bg-gray-50 text-sm">My Orders</a>
                                 @endif
                                 <hr class="my-1">
-                                <form method="POST" action="{{ route('logout') }}">
-                                    @csrf
-                                    <button class="w-full text-left px-4 py-2 hover:bg-gray-50 text-sm text-red-600">Logout</button>
-                                </form>
+                                <a href="{{ route('logout.get') }}"
+                                class="block w-full text-left px-4 py-2 hover:bg-gray-50 text-sm text-red-600">
+                                    <i class="fa-solid fa-right-from-bracket mr-1"></i> Logout
+                                </a>
                             </div>
                         </div>
                     @else
@@ -139,10 +139,9 @@
             <a href="{{ route('cultural.index') }}" class="block py-2 hover:text-accent">Cultural Stories</a>
             @auth
                 <a href="{{ route('orders.mine') }}" class="block py-2 hover:text-accent">My Orders</a>
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button class="block py-2 text-red-400">Logout</button>
-                </form>
+                <a href="{{ route('logout.get') }}" class="block py-2 text-red-400">
+                    <i class="fa-solid fa-right-from-bracket mr-1"></i> Logout
+                </a>
             @else
                 <a href="{{ route('login') }}" class="block py-2 hover:text-accent">Login</a>
                 <a href="{{ route('register') }}" class="block py-2 hover:text-accent">Register</a>
