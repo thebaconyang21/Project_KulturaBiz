@@ -204,7 +204,7 @@
                 </div>
             </div>
             <div class="border-t border-brand-700 mt-8 pt-6 text-center text-brand-300 text-xs">
-                © {{ date('Y') }} KulturaBiz. Preserving Mindanaoan Heritage. Made with ❤️ in the Philippines.
+                © {{ date('Y') }} KulturaBiz. Preserving Mindanaoan Heritage. Made with <i class="fa-notdog fa-solid fa-heart"></i> in the Philippines.
             </div>
         </div>
     </footer>
