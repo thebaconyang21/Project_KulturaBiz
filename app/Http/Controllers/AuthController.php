@@ -110,17 +110,26 @@ class AuthController extends Controller
     /**
      * Logout.
      */
+    // public function logout(Request $request)
+    // {
+    //     Auth::logout();
+
+    //     try {
+    //         $request->session()->flush();
+    //         $request->session()->invalidate();
+    //         $request->session()->regenerateToken();
+    //     } catch (\Exception $e) {
+    //         // Session already expired — continue anyway
+    //     }
+
+    //     return redirect('/')->with('success', 'Logged out successfully.');
+    // }
     public function logout(Request $request)
     {
         Auth::logout();
 
-        try {
-            $request->session()->flush();
-            $request->session()->invalidate();
-            $request->session()->regenerateToken();
-        } catch (\Exception $e) {
-            // Session already expired — continue anyway
-        }
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
 
         return redirect('/')->with('success', 'Logged out successfully.');
     }
