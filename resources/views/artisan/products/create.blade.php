@@ -95,40 +95,69 @@
                     </div>
                 </div>
 
+                
                 {{-- Cultural Heritage --}}
                 <div class="bg-brand-50 border border-brand-100 rounded-2xl p-6 space-y-4">
                     <div>
                         <h2 class="font-semibold text-brand-800">Cultural Heritage Documentation</h2>
-                        <p class="text-brand-600 text-xs mt-1">Share the cultural story and heritage of your craft. This helps buyers connect with the deeper meaning of your work.</p>
+                        <p class="text-brand-600 text-xs mt-1">Share the cultural story behind your craft.</p>
                     </div>
 
                     <div>
                         <label class="block text-sm font-medium text-brand-700 mb-1">Origin Location in Mindanao</label>
                         <input type="text" name="origin_location" value="{{ old('origin_location', auth()->user()->region) }}"
-                               class="w-full border border-brand-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 bg-white"
-                               placeholder="e.g., Marawi City, Lanao del Sur">
+                            class="w-full border border-brand-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 bg-white"
+                            placeholder="e.g., Marawi City, Lanao del Sur">
                     </div>
 
                     <div>
                         <label class="block text-sm font-medium text-brand-700 mb-1">Materials Used</label>
                         <input type="text" name="materials_used" value="{{ old('materials_used') }}"
-                               class="w-full border border-brand-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 bg-white"
-                               placeholder="e.g., Abaca fiber, natural dyes, bamboo">
+                            class="w-full border border-brand-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 bg-white"
+                            placeholder="e.g., Abaca fiber, natural dyes, bamboo">
                     </div>
 
                     <div>
                         <label class="block text-sm font-medium text-brand-700 mb-1">Cultural Background / Story</label>
                         <textarea name="cultural_background" rows="4"
-                                  class="w-full border border-brand-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 bg-white"
-                                  placeholder="Tell the story of this craft — its history, tradition, and significance in your community…">{{ old('cultural_background') }}</textarea>
+                                class="w-full border border-brand-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 bg-white"
+                                placeholder="Tell the story of this craft...">{{ old('cultural_background') }}</textarea>
                     </div>
 
                     <div>
                         <label class="block text-sm font-medium text-brand-700 mb-1">Tribe / Community</label>
                         <input type="text" name="tribe_community" value="{{ old('tribe_community', auth()->user()->tribe) }}"
-                               class="w-full border border-brand-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 bg-white"
-                               placeholder="e.g., Maranao, T'boli, Higaonon">
+                            class="w-full border border-brand-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 bg-white"
+                            placeholder="e.g., Maranao, T'boli, Higaonon">
                     </div>
+
+                    {{-- ADD THIS — Cultural Story Cover Photo --}}
+                    <div x-data="{ preview: null }">
+                        <label class="block text-sm font-medium text-brand-700 mb-1">
+                            Cultural Story Cover Photo
+                            <span class="text-brand-400 font-normal">(optional — appears on the Cultural Stories page)</span>
+                        </label>
+
+                        <label class="block border-2 border-dashed border-brand-300 rounded-xl p-5 text-center cursor-pointer hover:border-brand-500 hover:bg-white transition">
+                            <input type="file" name="cultural_cover_image" accept="image/*" class="hidden"
+                                @change="preview = URL.createObjectURL($event.target.files[0])">
+
+                            {{-- Preview --}}
+                            <template x-if="preview">
+                                <img :src="preview" class="w-full h-40 object-cover rounded-lg mb-2">
+                            </template>
+
+                            {{-- Placeholder --}}
+                            <template x-if="!preview">
+                                <div>
+                                    <i class="fa-solid fa-image text-brand-400 text-3xl mb-2"></i>
+                                    <p class="text-sm text-brand-600 font-medium">Click to upload cover photo</p>
+                                    <p class="text-xs text-brand-400 mt-1">JPG, PNG, WEBP — Max 2MB</p>
+                                </div>
+                            </template>
+                        </label>
+                    </div>
+
                 </div>
 
                 <div class="flex gap-3">

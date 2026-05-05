@@ -82,6 +82,7 @@ class ProductController extends Controller
             'origin_location'     => 'nullable|string|max:255',
             'materials_used'      => 'nullable|string|max:500',
             'images.*'            => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'cultural_cover_image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
         // Handle image uploads
@@ -102,15 +103,23 @@ class ProductController extends Controller
 
         // Auto-create cultural story if data provided
         if ($request->filled('cultural_background') || $request->filled('tribe_community')) {
+
+            // Handle cultural story cover image upload
+            $coverImagePath = null;
+            if ($request->hasFile('cultural_cover_image')) {
+                $coverImagePath = $request->file('cultural_cover_image')
+                    ->store('cultural-covers', 'public');
+            }
+
             CulturalStory::create([
                 'product_id'           => $product->id,
                 'user_id'              => auth()->id(),
                 'title'                => 'The Story of ' . $product->name,
-                'slug'                 => 'story-' . $product->slug,
+                'slug'                 => 'story-' . $product->slug . '-' . uniqid(),
                 'story'                => $request->cultural_background ?? 'A beautiful handmade product from Mindanao.',
                 'tribe_community'      => $request->tribe_community ?? auth()->user()->tribe ?? 'Mindanaoan',
                 'location'             => $request->origin_location ?? auth()->user()->region ?? 'Mindanao',
-                'cultural_significance'=> $request->cultural_significance,
+                'cover_image'          => $coverImagePath,
                 'is_published'         => true,
             ]);
         }
