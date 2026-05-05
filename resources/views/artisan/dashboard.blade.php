@@ -45,15 +45,18 @@
         {{-- Stats --}}
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
             @foreach([
-                ['Total Products',  $totalProducts,  '📦', 'text-blue-600',  'bg-blue-50'],
-                ['Active Products', $activeProducts, '✅', 'text-green-600', 'bg-green-50'],
-                ['Total Orders',   $totalOrders,    '🛒', 'text-purple-600', 'bg-purple-50'],
-                ['Revenue (Delivered)', '₱'.number_format($totalRevenue, 2), '💰', 'text-brand-600', 'bg-brand-50'],
+                ['Total Products',  $totalProducts,  'fa-box', 'text-blue-600',  'bg-blue-50'],
+                ['Active Products', $activeProducts, 'fa-circle-check', 'text-green-600', 'bg-green-50'],
+                ['Total Orders',   $totalOrders,    'fa-cart-shopping', 'text-purple-600', 'bg-purple-50'],
+                ['Revenue (Delivered)', '₱'.number_format($totalRevenue, 2), 'fa-cart-shopping', 'text-brand-600', 'bg-brand-50'],
             ] as [$label, $value, $icon, $color, $bg])
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
                     <div class="flex items-center justify-between mb-2">
                         <span class="text-gray-400 text-xs">{{ $label }}</span>
-                        <div class="w-8 h-8 {{ $bg }} rounded-lg flex items-center justify-center">{{ $icon }}</div>
+                        <!-- <div class="w-8 h-8 {{ $bg }} rounded-lg flex items-center justify-center">{{ $icon }}</div> -->
+                         <div class="w-8 h-8 {{ $bg }} rounded-lg flex items-center justify-center">
+                            <i class="fa-solid fa-{{ $icon }} {{ $color }}"></i>
+                        </div>
                     </div>
                     <div class="font-display text-2xl font-bold {{ $color }}">{{ $value }}</div>
                 </div>
