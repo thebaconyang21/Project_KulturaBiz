@@ -14,11 +14,11 @@
         </div>
         <nav class="space-y-1 px-3">
             @foreach([
-                ['admin.dashboard', '', 'Dashboard'],
-                ['admin.users', '', 'Users'],
-                ['admin.products', '', 'Products'],
-                ['admin.categories', '', 'Categories'],
-                ['admin.orders', '', 'Orders'],
+                ['admin.dashboard', 'gauge', 'Dashboard'],
+                ['admin.users', 'users', 'Users'],
+                ['admin.products', 'box', 'Products'],
+                ['admin.categories', 'layer-group', 'Categories'],
+                ['admin.orders', 'cart-shopping', 'Orders'],
             ] as [$route, $icon, $label])
                 <a href="{{ route($route) }}"
                    class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition

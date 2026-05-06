@@ -5,13 +5,36 @@
 @section('content')
 
 <div class="flex min-h-screen">
-    <aside class="w-56 bg-brand-900 text-white shrink-0 min-h-screen pt-6 hidden lg:block">
+
+    <!-- <aside class="w-56 bg-brand-900 text-white shrink-0 min-h-screen pt-6 hidden lg:block">
         <div class="px-5 mb-8">
             <p class="text-brand-300 text-xs font-bold uppercase tracking-widest mb-1">Administration</p>
         </div>
         <nav class="space-y-1 px-3">
             @foreach([['admin.dashboard','','Dashboard'],['admin.users','','Users'],['admin.products','','Products'],['admin.categories','','Categories'],['admin.orders','','Orders']] as [$r,$i,$l])
                 <a href="{{ route($r) }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition {{ request()->routeIs($r) ? 'bg-brand-700 text-white font-semibold' : 'text-brand-200 hover:bg-brand-800' }}">{{ $i }} {{ $l }}</a>
+            @endforeach
+        </nav>
+    </aside> -->
+        {{-- Admin Sidebar --}}
+    <aside class="w-56 bg-brand-900 text-white shrink-0 min-h-screen pt-6 hidden lg:block">
+        <div class="px-5 mb-8">
+            <p class="text-brand-300 text-xs font-bold uppercase tracking-widest mb-1">Administration</p>
+            <p class="text-white font-semibold text-sm">{{ auth()->user()->name }}</p>
+        </div>
+        <nav class="space-y-1 px-3">
+            @foreach([
+                ['admin.dashboard', 'gauge', 'Dashboard'],
+                ['admin.users', 'users', 'Users'],
+                ['admin.products', 'box', 'Products'],
+                ['admin.categories', 'layer-group', 'Categories'],
+                ['admin.orders', 'cart-shopping', 'Orders'],
+            ] as [$route, $icon, $label])
+                <a href="{{ route($route) }}"
+                   class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition
+                          {{ request()->routeIs($route) ? 'bg-brand-700 text-white font-semibold' : 'text-brand-200 hover:bg-brand-800 hover:text-white' }}">
+                    <i class="fa-solid fa-{{ $icon }} text-xl"></i> {{ $label }}
+                </a>
             @endforeach
         </nav>
     </aside>
