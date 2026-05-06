@@ -20,16 +20,40 @@ class ProductController extends Controller
     /**
      * Artisan dashboard.
      */
+    // public function dashboard()
+    // {
+    //     $artisan = auth()->user();
+
+    //     $totalProducts = Product::where('user_id', $artisan->id)->count();
+    //     $activeProducts = Product::where('user_id', $artisan->id)->where('status', 'active')->count();
+
+    //     $myProductIds = Product::where('user_id', $artisan->id)->pluck('id');
+
+    //     $totalOrders = OrderItem::whereIn('product_id', $myProductIds)->distinct('order_id')->count('order_id');
+    //     $totalRevenue = OrderItem::whereIn('product_id', $myProductIds)
+    //         ->whereHas('order', fn($q) => $q->where('status', 'delivered'))
+    //         ->sum('subtotal');
+
+    //     $recentOrders = Order::whereHas('items', fn($q) => $q->whereIn('product_id', $myProductIds))
+    //         ->with(['items' => fn($q) => $q->whereIn('product_id', $myProductIds), 'customer'])
+    //         ->latest()
+    //         ->take(5)
+    //         ->get();
+
+    //     return view('artisan.dashboard', compact(
+    //         'totalProducts', 'activeProducts', 'totalOrders', 'totalRevenue', 'recentOrders'
+    //     ));
+    // }
     public function dashboard()
     {
         $artisan = auth()->user();
 
-        $totalProducts = Product::where('user_id', $artisan->id)->count();
+        $totalProducts  = Product::where('user_id', $artisan->id)->count();
         $activeProducts = Product::where('user_id', $artisan->id)->where('status', 'active')->count();
 
         $myProductIds = Product::where('user_id', $artisan->id)->pluck('id');
 
-        $totalOrders = OrderItem::whereIn('product_id', $myProductIds)->distinct('order_id')->count('order_id');
+        $totalOrders  = OrderItem::whereIn('product_id', $myProductIds)->distinct('order_id')->count('order_id');
         $totalRevenue = OrderItem::whereIn('product_id', $myProductIds)
             ->whereHas('order', fn($q) => $q->where('status', 'delivered'))
             ->sum('subtotal');
@@ -40,8 +64,26 @@ class ProductController extends Controller
             ->take(5)
             ->get();
 
+        // ── Stock status data for the new stock section ──
+        $allProducts = Product::where('user_id', $artisan->id)
+            ->with('category')
+            ->orderBy('stock', 'asc') // show lowest stock first
+            ->get();
+
+        $inStockCount    = $allProducts->where('stock', '>', 5)->count();
+        $lowStockCount   = $allProducts->whereBetween('stock', [1, 5])->count();
+        $outOfStockCount = $allProducts->where('stock', 0)->count();
+
         return view('artisan.dashboard', compact(
-            'totalProducts', 'activeProducts', 'totalOrders', 'totalRevenue', 'recentOrders'
+            'totalProducts',
+            'activeProducts',
+            'totalOrders',
+            'totalRevenue',
+            'recentOrders',
+            'allProducts',
+            'inStockCount',
+            'lowStockCount',
+            'outOfStockCount'
         ));
     }
 

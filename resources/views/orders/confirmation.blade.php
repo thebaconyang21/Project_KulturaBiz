@@ -7,8 +7,8 @@
 <div class="max-w-2xl mx-auto px-4 py-16 text-center">
 
     {{-- Success Animation --}}
-    <div class="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 text-5xl">
-        
+    <div class="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+        <i class="fa-solid fa-circle-check text-green-600 text-5xl animate-bounce"></i>
     </div>
 
     <h1 class="font-display text-3xl font-bold text-gray-900 mb-3">Order Confirmed!</h1>
