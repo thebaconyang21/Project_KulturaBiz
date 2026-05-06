@@ -16,10 +16,10 @@
         </div>
         <nav class="space-y-1 px-3">
             @foreach([
-                ['artisan.dashboard',       '', 'Dashboard'],
-                ['artisan.products.index',  '', 'My Products'],
+                ['artisan.dashboard', '', 'Dashboard'],
+                ['artisan.products.index', '', 'My Products'],
                 ['artisan.products.create', '', 'Add Product'],
-                ['artisan.orders',          '', 'Orders'],
+                ['artisan.orders', '', 'Orders'],
             ] as [$route, $icon, $label])
                 <a href="{{ route($route) }}"
                    class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition
