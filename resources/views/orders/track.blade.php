@@ -126,7 +126,7 @@
             <p class="font-semibold text-gray-900">{{ $order->recipient_name }}</p>
             <p>{{ $order->delivery_address }}</p>
             <p>{{ $order->city }}, {{ $order->province }} {{ $order->postal_code }}</p>
-            <p>📞 {{ $order->contact_number }}</p>
+            <p>{{ $order->contact_number }}</p>
         </div>
     </div>
 
