@@ -97,21 +97,25 @@
             @endif
 
             {{-- Simulated pay button --}}
-            <form method="POST" action="{{ route('payments.process', $order->id) }}">
+            <form method="POST" action="{{ route('payments.process', $order->id) }}" id="payment-form">
                 @csrf
-                <input type="hidden" name="intent_id" value="{{ request('intent_id') }}">
+                <input type="hidden" name="intent_id" value="{{ request('intent_id', 'pi_sim_' . uniqid()) }}">
 
-                <button type="submit" x-bind:disabled="processing"
-                        @click="processing = true"
-                        class="w-full bg-blue-600 text-white font-bold py-4 rounded-xl hover:bg-blue-700 transition-all disabled:opacity-60 disabled:cursor-wait text-lg">
-                    <span x-show="!processing">
-                        @if($order->payment_method === 'gcash')  Pay with GCash
-                        @elseif($order->payment_method === 'maya')  Pay with Maya
-                        @elseif($order->payment_method === 'bank_transfer') Confirm Transfer
-                        @else  Pay ₱{{ number_format($order->total_amount, 2) }}
-                        @endif
-                    </span>
-                    <span x-show="processing"> Processing…</span>
+                <button type="submit"
+                        id="pay-btn"
+                        onclick="document.getElementById('pay-btn').disabled=true;
+                                document.getElementById('pay-btn').innerHTML='Processing…';
+                                document.getElementById('payment-form').submit();"
+                        class="w-full bg-blue-600 text-white font-bold py-4 rounded-xl hover:bg-blue-700 transition-all text-lg">
+                    @if($order->payment_method === 'gcash')
+                         Pay with GCash
+                    @elseif($order->payment_method === 'maya')
+                         Pay with Maya
+                    @elseif($order->payment_method === 'bank_transfer')
+                         Confirm Transfer
+                    @else
+                         Pay ₱{{ number_format($order->total_amount, 2) }}
+                    @endif
                 </button>
             </form>
 
