@@ -24,9 +24,13 @@
             </div>
             <div class="text-right">
                 <p class="text-brand-200 text-sm">Courier</p>
-                <p class="font-semibold">{{ $order->courier_name ?? 'TBD' }}</p>
+                <p class="font-semibold">
+                    {{ $order->courier_name ?? 'Awaiting shipment' }}
+                </p>
                 @if($order->tracking_number)
                     <p class="text-brand-300 text-xs mt-1">{{ $order->tracking_number }}</p>
+                @else
+                    <p class="text-brand-300 text-xs mt-1">Tracking number will appear here once shipped</p>
                 @endif
             </div>
         </div>

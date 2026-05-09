@@ -14,43 +14,72 @@ use Illuminate\Support\Facades\Log;
 class PaymentController extends Controller
 {
     public function __construct(
-        private PaymentService $payment,
-        private CourierService $courier,
+        private PaymentService      $payment,
+        private CourierService      $courier,
         private NotificationService $notify,
     ) {}
 
-    /**
-     * Start payment process
-     */
+
     public function initiate(Order $order)
     {
-        // COD = no online payment
+
         if ($order->payment_method === 'cod') {
-            $this->finalizeOrder($order);
+
+            try {
+                $order->update([
+                    'payment_status'     => 'pending', 
+                    'courier_name'       => null,      
+                    'tracking_number'    => null,      
+                    'estimated_delivery' => null,     
+                ]);
+
+               
+                try {
+                    $this->notify->orderPlaced($order->fresh());
+                    $this->notify->newOrderForArtisan($order->fresh());
+                } catch (\Exception $e) {
+                    Log::info('[Payment] COD notification skipped: ' . $e->getMessage());
+                }
+
+            } catch (\Exception $e) {
+                Log::error('[Payment] COD initiate error: ' . $e->getMessage());
+            }
 
             return redirect()->route('orders.confirmation', $order->id)
-                ->with('success', 'Order placed! Pay when your package arrives.');
+                ->with('success', 'Order placed! Pay cash when your package arrives.');
         }
 
-        // Create payment intent
-        $result = $this->payment->createPaymentIntent($order);
+       
+        try {
+            $result = $this->payment->createPaymentIntent($order);
 
-        if (!$result['success']) {
-            return redirect()->route('cart.index')
-                ->with('error', 'Payment could not be initiated.');
+            if (!$result['success']) {
+                return redirect()->route('cart.index')
+                    ->with('error', 'Payment could not be initiated. Please try again.');
+            }
+
+            
+            $order->update([
+                'payment_intent_id' => $result['payment_intent_id'] ?? null,
+            ]);
+
+            return redirect($result['checkout_url']);
+
+        } catch (\Exception $e) {
+            Log::error('[Payment] Initiate error: ' . $e->getMessage());
+
+            
+            $intentId    = 'pi_sim_' . strtolower(uniqid());
+            $checkoutUrl = route('payments.simulate', [
+                'order'     => $order->id,
+                'intent_id' => $intentId,
+            ]);
+
+            return redirect($checkoutUrl);
         }
-
-        // Save intent ID
-        $order->update([
-            'payment_intent_id' => $result['payment_intent_id'] ?? null
-        ]);
-
-        return redirect($result['checkout_url']);
     }
 
-    /**
-     * Simulated payment page
-     */
+   
     public function simulatePage(Request $request, Order $order)
     {
         if ($order->user_id !== Auth::id()) {
@@ -65,54 +94,45 @@ class PaymentController extends Controller
 
     public function processSimulated(Request $request, string $order)
     {
-        $orderModel = \App\Models\Order::findOrFail($order);
+        $orderModel = Order::findOrFail($order);
 
-        // Security check
-        if ($orderModel->user_id !== auth()->id()) {
+        
+        if ($orderModel->user_id !== Auth::id()) {
             abort(403);
         }
 
         try {
-            // Book courier
-            $couriers = [
-                'J&T Express',
-                'LBC Express',
-                'Ninja Van',
-                'Flash Express',
-                '2GO Express'
-            ];
-
-            $tracking = 'KB' . strtoupper(substr(md5($orderModel->id . uniqid()), 0, 10));
-
+            
             $orderModel->update([
                 'payment_status'     => 'paid',
                 'payment_intent_id'  => $request->input('intent_id'),
-                'courier_name'       => $couriers[array_rand($couriers)],
-                'tracking_number'    => $tracking,
-                'estimated_delivery' => now()->addDays(rand(5, 10)),
+                'courier_name'       => null, 
+                'tracking_number'    => null, 
+                'estimated_delivery' => null, 
             ]);
 
-            Log::info('[Payment] Order confirmed', [
-                'order'    => $orderModel->order_number,
-                'tracking' => $tracking,
+            Log::info('[Payment] GCash/Bank payment confirmed — awaiting courier assignment', [
+                'order'  => $orderModel->order_number,
+                'method' => $orderModel->payment_method,
             ]);
 
-            // Notification — wrapped in try/catch so it never blocks the redirect
+            
             try {
-                app(NotificationService::class)
-                    ->orderPlaced($orderModel->fresh());
+                $this->notify->orderPlaced($orderModel->fresh());
+                $this->notify->newOrderForArtisan($orderModel->fresh());
             } catch (\Exception $e) {
                 Log::info('[Payment] Notification skipped: ' . $e->getMessage());
             }
 
         } catch (\Exception $e) {
-            Log::error('[Payment] Error: ' . $e->getMessage());
+            Log::error('[Payment] processSimulated error: ' . $e->getMessage());
+            
         }
 
-        // Always redirect no matter what
+        
         return redirect()
             ->route('orders.confirmation', $orderModel->id)
-            ->with('success', '✅ Payment successful! Your order is confirmed.');
+            ->with('success', 'Payment successful! Your order is confirmed.');
     }
 
 
@@ -123,27 +143,44 @@ class PaymentController extends Controller
 
         if (!$intentId) {
             return redirect()->route('orders.track', $order->id)
-                ->with('error', 'Payment unclear.');
+                ->with('error', 'Payment status unclear. Please check your order.');
         }
 
-        $result = $this->payment->verifyPayment($intentId);
+        try {
+            $result = $this->payment->verifyPayment($intentId);
 
-        if ($result['success']) {
-            $this->finalizeOrder($order, $intentId);
+            if ($result['success']) {
+                $order->update([
+                    'payment_status'     => 'paid',
+                    'payment_intent_id'  => $intentId,
+                    'courier_name'       => null,
+                    'tracking_number'    => null,
+                    'estimated_delivery' => null,
+                ]);
 
-            return redirect()->route('orders.confirmation', $order->id)
-                ->with('success', '✅ Payment confirmed!');
+                try {
+                    $this->notify->orderPlaced($order->fresh());
+                    $this->notify->newOrderForArtisan($order->fresh());
+                } catch (\Exception $e) {
+                    Log::info('[Payment] Callback notification skipped: ' . $e->getMessage());
+                }
+
+                return redirect()->route('orders.confirmation', $order->id)
+                    ->with('success', 'Payment confirmed!');
+            }
+        } catch (\Exception $e) {
+            Log::error('[Payment] Callback error: ' . $e->getMessage());
         }
 
         return redirect()->route('checkout')
-            ->with('error', 'Payment not completed.');
+            ->with('error', 'Payment was not completed. Please try again.');
     }
 
-
+ 
     public function webhook(Request $request)
     {
         $signature = $request->header('Paymongo-Signature');
-        $payload = $request->getContent();
+        $payload   = $request->getContent();
 
         if (config('services.paymongo.use_real') &&
             !$this->verifyWebhookSignature($payload, $signature)) {
@@ -163,29 +200,34 @@ class PaymentController extends Controller
     }
 
 
+
     private function finalizeOrder(Order $order, ?string $intentId = null): void
     {
-        DB::transaction(function () use ($order, $intentId) {
+        try {
+            DB::transaction(function () use ($order, $intentId) {
+                $order->update([
+                    'payment_status'     => 'paid',
+                    'payment_intent_id'  => $intentId,
+                    'courier_name'       => null,
+                    'tracking_number'    => null,
+                    'estimated_delivery' => null,
+                ]);
+            });
+        } catch (\Exception $e) {
+            Log::error('[Payment] finalizeOrder error: ' . $e->getMessage());
+        }
 
-            $booking = $this->courier->book($order);
-
-            $order->update([
-                'payment_status'     => 'paid',
-                'payment_intent_id'  => $intentId,
-                'courier_name'       => $booking['courier_name'],
-                'tracking_number'    => $booking['tracking_number'],
-                'estimated_delivery' => $booking['estimated_delivery'],
-            ]);
-        });
-
-        $this->notify->orderPlaced($order->fresh());
-        $this->notify->newOrderForArtisan($order->fresh());
+        try {
+            $this->notify->orderPlaced($order->fresh());
+            $this->notify->newOrderForArtisan($order->fresh());
+        } catch (\Exception $e) {
+            Log::info('[Payment] finalizeOrder notification skipped: ' . $e->getMessage());
+        }
     }
 
     private function handlePaymentPaid(array $data): void
     {
         $intentId = $data['id'] ?? null;
-
         if (!$intentId) return;
 
         $order = Order::where('payment_intent_id', $intentId)->first();
@@ -198,7 +240,6 @@ class PaymentController extends Controller
     private function handlePaymentFailed(array $data): void
     {
         $intentId = $data['id'] ?? null;
-
         if (!$intentId) return;
 
         Order::where('payment_intent_id', $intentId)

@@ -192,18 +192,35 @@ class DashboardController extends Controller
 
     public function updateOrderStatus(Request $request, string $id)
     {
-        $request->validate(['status' => 'required|in:pending,processing,shipped,delivered,cancelled']);
+        $request->validate([
+            'status'       => 'required|in:pending,processing,shipped,delivered,cancelled',
+            'courier_name' => 'nullable|string|max:100',
+        ]);
 
         $order = Order::findOrFail($id);
         $data  = ['status' => $request->status];
 
-        // Record timestamps
         match ($request->status) {
             'processing' => $data['processing_at'] = now(),
-            'shipped'    => $data['shipped_at'] = now(),
-            'delivered'  => $data['delivered_at'] = now(),
+            'shipped'    => $data['shipped_at']    = now(),
+            'delivered'  => $data['delivered_at']  = now(),
             default      => null,
         };
+
+        // When admin ships the order — assign courier and tracking
+        if ($request->status === 'shipped') {
+            $couriers = ['J&T Express', 'LBC Express', 'Ninja Van', 'Flash Express', '2GO Express'];
+
+            $data['courier_name']       = $request->courier_name
+                                        ?? $couriers[array_rand($couriers)];
+            $data['tracking_number']    = 'KB' . strtoupper(substr(md5($order->id . uniqid()), 0, 10));
+            $data['estimated_delivery'] = now()->addDays(rand(3, 7));
+        }
+
+        // When delivered — mark COD as paid
+        if ($request->status === 'delivered' && $order->payment_method === 'cod') {
+            $data['payment_status'] = 'paid';
+        }
 
         $order->update($data);
 

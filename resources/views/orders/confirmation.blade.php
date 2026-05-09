@@ -51,9 +51,9 @@
         {{-- Logistics info --}}
         <div class="mt-5 bg-brand-50 rounded-xl p-4 text-sm">
             <p class="font-semibold text-brand-800 mb-2">Delivery Information</p>
-            <p class="text-gray-600">Courier: <strong>{{ $order->courier_name }}</strong></p>
-            <p class="text-gray-600">Tracking: <strong>{{ $order->tracking_number }}</strong></p>
-            <p class="text-gray-600">Estimated Arrival: <strong>{{ $order->estimated_delivery->format('F d, Y') }}</strong></p>
+            <p class="text-gray-600">Courier:<strong>{{ $order->courier_name ?? 'To be assigned' }}</strong></p>
+            <p class="text-gray-600">Tracking:<strong>{{ $order->tracking_number ?? 'Will be provided when shipped' }}</strong></p>
+            <p class="text-gray-600">Estimated Arrival:<strong>{{ $order->estimated_delivery? $order->estimated_delivery->format('F d, Y'): 'Will be updated when shipped' }}</strong></p>
             <p class="text-gray-600">Payment: <strong>{{ strtoupper($order->payment_method) }}</strong></p>
         </div>
     </div>
