@@ -1,55 +1,5 @@
 <?php
 
-// namespace App\Models;
-
-// // use Illuminate\Contracts\Auth\MustVerifyEmail;
-// use Database\Factories\UserFactory;
-// use Illuminate\Database\Eloquent\Factories\HasFactory;
-// use Illuminate\Foundation\Auth\User as Authenticatable;
-// use Illuminate\Notifications\Notifiable;
-
-// class User extends Authenticatable
-// {
-//     /** @use HasFactory<UserFactory> */
-//     use HasFactory, Notifiable;
-
-//     /**
-//      * The attributes that are mass assignable.
-//      *
-//      * @var list<string>
-//      */
-//     protected $fillable = [
-//         'name',
-//         'email',
-//         'password',
-//     ];
-
-//     /**
-//      * The attributes that should be hidden for serialization.
-//      *
-//      * @var list<string>
-//      */
-//     protected $hidden = [
-//         'password',
-//         'remember_token',
-//     ];
-
-//     /**
-//      * Get the attributes that should be cast.
-//      *
-//      * @return array<string, string>
-//      */
-//     protected function casts(): array
-//     {
-//         return [
-//             'email_verified_at' => 'datetime',
-//             'password' => 'hashed',
-//         ];
-//     }
-// }
-
-
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -60,9 +10,6 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     */
     protected $fillable = [
         'name',
         'email',
@@ -71,122 +18,117 @@ class User extends Authenticatable
         'phone',
         'address',
         'profile_photo',
+        'cover_photo',
         'bio',
         'status',
         'shop_name',
         'tribe',
         'region',
+        'facebook_url',
+        'instagram_url',
+        'years_of_experience',
+        'craft_specialization',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * The attributes that should be cast.
-     */
     protected function casts(): array
     {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+            'password'          => 'hashed',
         ];
     }
 
-    // ==========================================
-    // ROLE HELPER METHODS
-    // ==========================================
+    // ─── Role Helpers ──────────────────────────────────────────
 
-    /**
-     * Check if user is an admin.
-     */
-    public function isAdmin(): bool
-    {
-        return $this->role === 'admin';
-    }
+    public function isAdmin(): bool    { return $this->role === 'admin'; }
+    public function isArtisan(): bool  { return $this->role === 'artisan'; }
+    public function isCustomer(): bool { return $this->role === 'customer'; }
+    public function isApproved(): bool { return $this->status === 'approved'; }
 
-    /**
-     * Check if user is an artisan (seller).
-     */
-    public function isArtisan(): bool
-    {
-        return $this->role === 'artisan';
-    }
+    // ─── Relationships ─────────────────────────────────────────
 
-    /**
-     * Check if user is a customer (buyer).
-     */
-    public function isCustomer(): bool
-    {
-        return $this->role === 'customer';
-    }
-
-    /**
-     * Check if artisan account is approved.
-     */
-    public function isApproved(): bool
-    {
-        return $this->status === 'approved';
-    }
-
-
-    /**
-     * Products created by this artisan.
-     */
     public function products()
     {
         return $this->hasMany(Product::class);
     }
 
-    /**
-     * Orders placed by this customer.
-     */
     public function orders()
     {
         return $this->hasMany(Order::class);
     }
 
-    /**
-     * Cultural stories authored by this user.
-     */
     public function culturalStories()
     {
         return $this->hasMany(CulturalStory::class);
     }
 
-    /**
-     * Reviews written by this user.
-     */
     public function reviews()
     {
         return $this->hasMany(Review::class);
     }
 
+    // ─── Computed Attributes ───────────────────────────────────
 
     /**
-     * Get the profile photo URL or a placeholder.
+     * Profile photo URL — returns uploaded image or a generated avatar.
      */
     public function getProfilePhotoUrlAttribute(): string
     {
         if ($this->profile_photo) {
             return asset('storage/' . $this->profile_photo);
         }
-        return 'https://ui-avatars.com/api/?name=' . urlencode($this->name) . '&background=8B4513&color=fff';
+
+        // UI Avatars — generates a nice letter avatar with brand colors
+        return 'https://ui-avatars.com/api/?name=' . urlencode($this->name)
+             . '&background=6B3A2A&color=F5EDD8&size=256&bold=true&rounded=true';
     }
 
     /**
-     * Get total sales amount for this artisan.
+     * Cover photo URL — returns uploaded image or a default gradient banner.
+     */
+    public function getCoverPhotoUrlAttribute(): string
+    {
+        if ($this->cover_photo) {
+            return asset('storage/' . $this->cover_photo);
+        }
+
+        return ''; // handled in blade with CSS gradient fallback
+    }
+
+    /**
+     * Total sales for this artisan (delivered orders only).
      */
     public function getTotalSalesAttribute(): float
     {
-        return OrderItem::whereHas('product', function ($q) {
-            $q->where('user_id', $this->id);
-        })->whereHas('order', function ($q) {
-            $q->where('status', 'delivered');
-        })->sum('subtotal');
+        return OrderItem::whereHas('product', fn($q) => $q->where('user_id', $this->id))
+            ->whereHas('order', fn($q) => $q->where('status', 'delivered'))
+            ->sum('subtotal');
+    }
+
+    /**
+     * Total number of products sold.
+     */
+    public function getTotalProductsSoldAttribute(): int
+    {
+        return OrderItem::whereHas('product', fn($q) => $q->where('user_id', $this->id))
+            ->whereHas('order', fn($q) => $q->where('status', 'delivered'))
+            ->sum('quantity');
+    }
+
+    /**
+     * Average rating across all artisan's products.
+     */
+    public function getAverageRatingAttribute(): float
+    {
+        $avg = Product::where('user_id', $this->id)
+            ->where('average_rating', '>', 0)
+            ->avg('average_rating');
+
+        return round((float) $avg, 1);
     }
 }
