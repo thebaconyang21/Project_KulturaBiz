@@ -13,61 +13,53 @@ use Illuminate\Support\Facades\Storage;
 
 /**
  * Artisan\ProductController
- * Handles artisan's product management (CRUD) and order tracking.
+ * Handles artisan dashboard, product management, and order tracking.
  */
 class ProductController extends Controller
 {
-    /**
-     * Artisan dashboard.
-     */
-    // public function dashboard()
-    // {
-    //     $artisan = auth()->user();
-
-    //     $totalProducts = Product::where('user_id', $artisan->id)->count();
-    //     $activeProducts = Product::where('user_id', $artisan->id)->where('status', 'active')->count();
-
-    //     $myProductIds = Product::where('user_id', $artisan->id)->pluck('id');
-
-    //     $totalOrders = OrderItem::whereIn('product_id', $myProductIds)->distinct('order_id')->count('order_id');
-    //     $totalRevenue = OrderItem::whereIn('product_id', $myProductIds)
-    //         ->whereHas('order', fn($q) => $q->where('status', 'delivered'))
-    //         ->sum('subtotal');
-
-    //     $recentOrders = Order::whereHas('items', fn($q) => $q->whereIn('product_id', $myProductIds))
-    //         ->with(['items' => fn($q) => $q->whereIn('product_id', $myProductIds), 'customer'])
-    //         ->latest()
-    //         ->take(5)
-    //         ->get();
-
-    //     return view('artisan.dashboard', compact(
-    //         'totalProducts', 'activeProducts', 'totalOrders', 'totalRevenue', 'recentOrders'
-    //     ));
-    // }
+    // ─────────────────────────────────────────────────────────
+    // DASHBOARD
+    // ─────────────────────────────────────────────────────────
     public function dashboard()
     {
-        $artisan = auth()->user();
+        $artisan      = auth()->user();
+        $myProductIds = Product::where('user_id', $artisan->id)->pluck('id');
 
+        // Stat cards
         $totalProducts  = Product::where('user_id', $artisan->id)->count();
         $activeProducts = Product::where('user_id', $artisan->id)->where('status', 'active')->count();
 
-        $myProductIds = Product::where('user_id', $artisan->id)->pluck('id');
+        $totalOrders = OrderItem::whereIn('product_id', $myProductIds)
+            ->distinct('order_id')
+            ->count('order_id');
 
-        $totalOrders  = OrderItem::whereIn('product_id', $myProductIds)->distinct('order_id')->count('order_id');
+        // Total revenue — all delivered orders ever
         $totalRevenue = OrderItem::whereIn('product_id', $myProductIds)
             ->whereHas('order', fn($q) => $q->where('status', 'delivered'))
             ->sum('subtotal');
 
+        // TODAY'S revenue — delivered orders placed today
+        $todayRevenue = OrderItem::whereIn('product_id', $myProductIds)
+            ->whereHas('order', fn($q) => $q
+                ->where('status', 'delivered')
+                ->whereDate('created_at', today())
+            )
+            ->sum('subtotal');
+
+        // Recent orders
         $recentOrders = Order::whereHas('items', fn($q) => $q->whereIn('product_id', $myProductIds))
-            ->with(['items' => fn($q) => $q->whereIn('product_id', $myProductIds), 'customer'])
+            ->with([
+                'items' => fn($q) => $q->whereIn('product_id', $myProductIds),
+                'customer'
+            ])
             ->latest()
             ->take(5)
             ->get();
 
-        // ── Stock status data for the new stock section ──
+        // Stock status data
         $allProducts = Product::where('user_id', $artisan->id)
             ->with('category')
-            ->orderBy('stock', 'asc') // show lowest stock first
+            ->orderBy('stock', 'asc')
             ->get();
 
         $inStockCount    = $allProducts->where('stock', '>', 5)->count();
@@ -79,6 +71,7 @@ class ProductController extends Controller
             'activeProducts',
             'totalOrders',
             'totalRevenue',
+            'todayRevenue',
             'recentOrders',
             'allProducts',
             'inStockCount',
@@ -87,9 +80,9 @@ class ProductController extends Controller
         ));
     }
 
-    /**
-     * List artisan's products.
-     */
+    // ─────────────────────────────────────────────────────────
+    // PRODUCT MANAGEMENT
+    // ─────────────────────────────────────────────────────────
     public function index()
     {
         $products = Product::where('user_id', auth()->id())
@@ -100,34 +93,28 @@ class ProductController extends Controller
         return view('artisan.products.index', compact('products'));
     }
 
-    /**
-     * Show create product form.
-     */
     public function create()
     {
         $categories = Category::where('is_active', true)->get();
         return view('artisan.products.create', compact('categories'));
     }
 
-    /**
-     * Store a new product.
-     */
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name'                => 'required|string|max:255',
-            'category_id'         => 'required|exists:categories,id',
-            'description'         => 'required|string|min:20',
-            'price'               => 'required|numeric|min:1',
-            'stock'               => 'required|integer|min:0',
-            'cultural_background' => 'nullable|string',
-            'origin_location'     => 'nullable|string|max:255',
-            'materials_used'      => 'nullable|string|max:500',
-            'images.*'            => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'name'                 => 'required|string|max:255',
+            'category_id'          => 'required|exists:categories,id',
+            'description'          => 'required|string|min:20',
+            'price'                => 'required|numeric|min:1',
+            'stock'                => 'required|integer|min:0',
+            'cultural_background'  => 'nullable|string',
+            'origin_location'      => 'nullable|string|max:255',
+            'materials_used'       => 'nullable|string|max:500',
+            'images.*'             => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'cultural_cover_image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
 
-        // Handle image uploads
+        // Handle product image uploads
         $imagePaths = [];
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $image) {
@@ -146,7 +133,7 @@ class ProductController extends Controller
         // Auto-create cultural story if data provided
         if ($request->filled('cultural_background') || $request->filled('tribe_community')) {
 
-            // Handle cultural story cover image upload
+            // Handle cultural story cover image
             $coverImagePath = null;
             if ($request->hasFile('cultural_cover_image')) {
                 $coverImagePath = $request->file('cultural_cover_image')
@@ -154,15 +141,20 @@ class ProductController extends Controller
             }
 
             CulturalStory::create([
-                'product_id'           => $product->id,
-                'user_id'              => auth()->id(),
-                'title'                => 'The Story of ' . $product->name,
-                'slug'                 => 'story-' . $product->slug . '-' . uniqid(),
-                'story'                => $request->cultural_background ?? 'A beautiful handmade product from Mindanao.',
-                'tribe_community'      => $request->tribe_community ?? auth()->user()->tribe ?? 'Mindanaoan',
-                'location'             => $request->origin_location ?? auth()->user()->region ?? 'Mindanao',
-                'cover_image'          => $coverImagePath,
-                'is_published'         => true,
+                'product_id'      => $product->id,
+                'user_id'         => auth()->id(),
+                'title'           => 'The Story of ' . $product->name,
+                'slug'            => 'story-' . $product->slug . '-' . uniqid(),
+                'story'           => $request->cultural_background
+                                     ?? 'A beautiful handmade product from Mindanao.',
+                'tribe_community' => $request->tribe_community
+                                     ?? auth()->user()->tribe
+                                     ?? 'Mindanaoan',
+                'location'        => $request->origin_location
+                                     ?? auth()->user()->region
+                                     ?? 'Mindanao',
+                'cover_image'     => $coverImagePath,
+                'is_published'    => true,
             ]);
         }
 
@@ -170,20 +162,14 @@ class ProductController extends Controller
             ->with('success', "Product '{$product->name}' created successfully!");
     }
 
-    /**
-     * Show edit form.
-     */
-    public function edit(int $id)
+    public function edit(string $id)
     {
         $product    = Product::where('id', $id)->where('user_id', auth()->id())->firstOrFail();
         $categories = Category::where('is_active', true)->get();
         return view('artisan.products.edit', compact('product', 'categories'));
     }
 
-    /**
-     * Update a product.
-     */
-    public function update(Request $request, int $id)
+    public function update(Request $request, string $id)
     {
         $product = Product::where('id', $id)->where('user_id', auth()->id())->firstOrFail();
 
@@ -217,14 +203,10 @@ class ProductController extends Controller
             ->with('success', "Product '{$product->name}' updated!");
     }
 
-    /**
-     * Delete a product.
-     */
-    public function destroy(int $id)
+    public function destroy(string $id)
     {
         $product = Product::where('id', $id)->where('user_id', auth()->id())->firstOrFail();
 
-        // Delete stored images
         if ($product->images) {
             foreach ($product->images as $image) {
                 Storage::disk('public')->delete($image);
@@ -235,29 +217,30 @@ class ProductController extends Controller
         return back()->with('success', 'Product deleted.');
     }
 
-    /**
-     * View orders for artisan's products.
-     */
+    // ─────────────────────────────────────────────────────────
+    // ORDERS
+    // ─────────────────────────────────────────────────────────
     public function orders()
     {
         $myProductIds = Product::where('user_id', auth()->id())->pluck('id');
 
         $orders = Order::whereHas('items', fn($q) => $q->whereIn('product_id', $myProductIds))
-            ->with(['items' => fn($q) => $q->whereIn('product_id', $myProductIds)->with('product'), 'customer'])
+            ->with([
+                'items' => fn($q) => $q->whereIn('product_id', $myProductIds)->with('product'),
+                'customer'
+            ])
             ->latest()
             ->paginate(15);
 
         return view('artisan.orders', compact('orders'));
     }
 
-    /**
-     * Update order status (artisan can set to processing).
-     */
-    public function updateOrderStatus(Request $request, int $orderId)
+    public function updateOrderStatus(Request $request, string $orderId)
     {
         $request->validate(['status' => 'required|in:processing,cancelled']);
 
         $myProductIds = Product::where('user_id', auth()->id())->pluck('id');
+
         $order = Order::whereHas('items', fn($q) => $q->whereIn('product_id', $myProductIds))
             ->findOrFail($orderId);
 
@@ -267,15 +250,16 @@ class ProductController extends Controller
         }
 
         $order->update($data);
+
         return back()->with('success', "Order #{$order->order_number} marked as {$request->status}.");
     }
 
-    /**
-     * Generate a unique slug from name.
-     */
+    // ─────────────────────────────────────────────────────────
+    // HELPERS
+    // ─────────────────────────────────────────────────────────
     private function generateSlug(string $name): string
     {
-        $slug = str()->slug($name);
+        $slug  = str()->slug($name);
         $count = Product::where('slug', 'like', "{$slug}%")->count();
         return $count ? "{$slug}-{$count}" : $slug;
     }

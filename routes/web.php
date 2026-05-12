@@ -7,6 +7,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\Admin\DashboardController as AdminController;
 use App\Http\Controllers\Artisan\ProductController as ArtisanController;
+use App\Http\Controllers\Artisan\SalesController as ArtisanSalesController;
 
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -84,6 +85,11 @@ Route::middleware(['auth', 'artisan'])->prefix('artisan')->name('artisan.')->gro
 
     Route::get('/orders', [ArtisanController::class, 'orders'])->name('orders');
     Route::patch('/orders/{orderId}/status', [ArtisanController::class, 'updateOrderStatus'])->name('orders.status');
+
+     // Sales Reports
+    Route::get('/sales/daily', [ArtisanSalesController::class, 'daily'])->name('sales.daily');
+    Route::get('/sales/monthly', [ArtisanSalesController::class, 'monthly'])->name('sales.monthly');
+    Route::get('/sales/yearly', [ArtisanSalesController::class, 'yearly'])->name('sales.yearly');
 });
 
 
