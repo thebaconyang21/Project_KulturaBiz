@@ -127,7 +127,7 @@
                                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                         @else
                             <div class="w-full h-full flex items-center justify-center">
-                                <span class="text-6xl opacity-40">🎨</span>
+                                <span class="text-6xl opacity-40"></span>
                             </div>
                         @endif
                         {{-- Category badge --}}
