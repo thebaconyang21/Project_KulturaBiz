@@ -7,49 +7,7 @@
 <div class="flex min-h-screen">
 
     {{-- Sidebar --}}
-    <aside class="w-56 bg-brand-800 text-white shrink-0 min-h-screen pt-6 hidden lg:block"
-           x-data="{ salesOpen: true }">
-        <div class="px-5 mb-8">
-            <div class="w-12 h-12 rounded-full overflow-hidden mb-3 border-2 border-accent">
-                <img src="https://ui-avatars.com/api/?name={{ urlencode(auth()->user()->name) }}"
-                        alt=""
-                        class="w-full h-full object-cover">
-            </div>
-            <p class="font-semibold text-sm">{{ auth()->user()->name }}</p>
-            <p class="text-brand-300 text-xs mt-0.5">{{ auth()->user()->shop_name ?? 'My Shop' }}</p>
-        </div>
-        <nav class="space-y-1 px-3">
-            <a href="{{ route('artisan.dashboard') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition text-brand-200 hover:bg-brand-700">
-                <i class="fa-solid fa-gauge w-4 text-center"></i> Dashboard
-            </a>
-            <a href="{{ route('artisan.products.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition text-brand-200 hover:bg-brand-700">
-                <i class="fa-solid fa-box w-4 text-center"></i> My Products
-            </a>
-            <a href="{{ route('artisan.products.create') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition text-brand-200 hover:bg-brand-700">
-                <i class="fa-solid fa-plus w-4 text-center"></i> Add Product
-            </a>
-            <a href="{{ route('artisan.orders') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition text-brand-200 hover:bg-brand-700">
-                <i class="fa-solid fa-cart-shopping w-4 text-center"></i> Orders
-            </a>
-            <button @click="salesOpen = !salesOpen"
-                    class="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm bg-brand-700 text-white font-semibold">
-                <i class="fa-solid fa-chart-line w-4 text-center"></i>
-                <span class="flex-1 text-left">Sales</span>
-                <i class="fa-solid fa-chevron-down text-xs" :class="salesOpen ? 'rotate-180' : ''"></i>
-            </button>
-            <div x-show="salesOpen" class="ml-4 space-y-1 border-l border-brand-600 pl-3 mt-1">
-                <a href="{{ route('artisan.sales.daily') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition text-brand-300 hover:bg-brand-700 hover:text-white">
-                    <i class="fa-solid fa-calendar-day w-4 text-center text-xs"></i> Daily
-                </a>
-                <a href="{{ route('artisan.sales.monthly') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm bg-brand-600 text-white font-semibold">
-                    <i class="fa-solid fa-calendar-days w-4 text-center text-xs"></i> Monthly
-                </a>
-                <a href="{{ route('artisan.sales.yearly') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition text-brand-300 hover:bg-brand-700 hover:text-white">
-                    <i class="fa-solid fa-calendar w-4 text-center text-xs"></i> Yearly
-                </a>
-            </div>
-        </nav>
-    </aside>
+    @include('artisan.partials.sidebar')
 
     {{-- Main Content --}}
     <div class="flex-1 bg-gray-50 p-6 lg:p-8">

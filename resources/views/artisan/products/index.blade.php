@@ -7,32 +7,7 @@
 <div class="flex min-h-screen">
 
     {{-- ── Sidebar ─────────────────────────────────────────── --}}
-    <aside class="w-56 bg-brand-800 text-white shrink-0 min-h-screen pt-6 hidden lg:block">
-        <div class="px-5 mb-8">
-            <div class="w-12 h-12 rounded-full overflow-hidden mb-3 border-2 border-accent">
-                <img src="{{ auth()->user()->profile_photo_url }}"
-                     alt="{{ auth()->user()->name }}"
-                     class="w-full h-full object-cover">
-            </div>
-            <p class="font-semibold text-sm">{{ auth()->user()->name }}</p>
-            <p class="text-brand-300 text-xs mt-0.5">{{ auth()->user()->shop_name }}</p>
-        </div>
-        <nav class="space-y-1 px-3">
-            @foreach([
-                ['artisan.dashboard',       'gauge',         'Dashboard'],
-                ['artisan.products.index',  'box',           'My Products'],
-                ['artisan.products.create', 'plus',          'Add Product'],
-                ['artisan.orders',          'cart-shopping', 'Orders'],
-            ] as [$route, $icon, $label])
-                <a href="{{ route($route) }}"
-                   class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition
-                          {{ request()->routeIs($route) ? 'bg-brand-700 text-white font-semibold' : 'text-brand-200 hover:bg-brand-700' }}">
-                    <i class="fa-solid fa-{{ $icon }} w-4 text-center"></i>
-                    {{ $label }}
-                </a>
-            @endforeach
-        </nav>
-    </aside>
+    @include('artisan.partials.sidebar')
 
     <div class="flex-1 bg-gray-50 p-8">
         <div class="flex items-center justify-between mb-8">
