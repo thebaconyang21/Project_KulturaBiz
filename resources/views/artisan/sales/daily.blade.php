@@ -32,7 +32,7 @@
                         <i class="fa-solid fa-peso-sign text-gray-900"></i>
                     </div>
                 </div>
-                <div class="font-display text-2xl font-bold text-brand-600">
+                <div class="font-display text-2xl font-bold text-brown-900">
                     ₱{{ number_format($todayRevenue, 2) }}
                 </div>
             </div>
@@ -43,7 +43,7 @@
                         <i class="fa-solid fa-cart-shopping text-gray-900"></i>
                     </div>
                 </div>
-                <div class="font-display text-2xl font-bold text-blue-600">
+                <div class="font-display text-2xl font-bold text-brown-900">
                     {{ $todayOrders }}
                 </div>
             </div>
@@ -54,7 +54,7 @@
                         <i class="fa-solid fa-box text-gray-900"></i>
                     </div>
                 </div>
-                <div class="font-display text-2xl font-bold text-green-600">
+                <div class="font-display text-2xl font-bold text-brown-900">
                     {{ $todayItemsSold }}
                 </div>
             </div>

@@ -33,7 +33,7 @@
                         <i class="fa-solid fa-box text-gray-900 text-lg"></i>
                     </div>
                 </div>
-                <div class="font-display text-2xl font-bold text-blue-600">{{ $totalProducts }}</div>
+                <div class="font-display text-2xl font-bold text-brown-900">{{ $totalProducts }}</div>
             </div>
 
             <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
@@ -43,7 +43,7 @@
                         <i class="fa-solid fa-circle-check text-gray-900 text-lg"></i>
                     </div>
                 </div>
-                <div class="font-display text-2xl font-bold text-green-600">{{ $activeProducts }}</div>
+                <div class="font-display text-2xl font-bold text-brown-900">{{ $activeProducts }}</div>
             </div>
 
             <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
@@ -53,7 +53,7 @@
                         <i class="fa-solid fa-cart-shopping text-gray-900 text-lg"></i>
                     </div>
                 </div>
-                <div class="font-display text-2xl font-bold text-purple-600">{{ $totalOrders }}</div>
+                <div class="font-display text-2xl font-bold text-brown-900">{{ $totalOrders }}</div>
             </div>
 
             {{-- TODAY'S Revenue --}}
@@ -67,7 +67,7 @@
                         <i class="fa-solid fa-peso-sign text-gray-900 text-lg"></i>
                     </div>
                 </div>
-                <div class="font-display text-2xl font-bold text-brand-600">
+                <div class="font-display text-2xl font-bold text-brown-900">
                     ₱{{ number_format($todayRevenue, 2) }}
                 </div>
                 <p class="text-xs text-gray-400 mt-1">Total: ₱{{ number_format($totalRevenue, 2) }}</p>
