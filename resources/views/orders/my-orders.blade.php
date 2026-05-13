@@ -13,8 +13,14 @@
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition">
                     <div class="flex flex-wrap items-start justify-between gap-3 mb-4">
                         <div>
-                            <p class="font-bold text-gray-900">#{{ $order->order_number }}</p>
-                            <p class="text-xs text-gray-400 mt-1">{{ $order->created_at->format('M d, Y') }}</p>
+                            <p class="font-bold text-gray-900">
+                            {{ $order->items->first()->product_name ?? 'Order' }}
+                            @if($order->items->count() > 1)
+                                <span class="text-sm font-normal text-gray-400">+{{ $order->items->count() - 1 }} more</span>
+                            @endif
+                            </p>
+                            <p class="text-xs text-gray-500 mt-0.5">#{{ $order->order_number }}</p>
+                            <p class="text-xs text-gray-400 mt-0.5">{{ $order->created_at->format('M d, Y') }}</p>
                         </div>
                         <div class="flex items-center gap-3">
                             <span class="{{ $order->status_badge }}">{{ $order->status_label }}</span>
