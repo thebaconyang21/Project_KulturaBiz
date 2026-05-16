@@ -41,15 +41,19 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
                     <div class="relative" x-data="{ show: false }">
-                        <input :type="show ? 'text' : 'password'"
+                        <input x-bind:type="show ? 'text' : 'password'"
                             name="password" required
                             class="w-full border border-gray-200 rounded-xl px-4 py-3 pr-11 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent transition"
                             placeholder="••••••••">
                         <button type="button"
-                                @click="show = !show"
+                                x-on:click="show = !show"
                                 class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-brand-600 transition focus:outline-none">
-                            <i x-show="!show" class="fa-solid fa-eye text-sm"></i>
-                            <i x-show="show"  class="fa-solid fa-eye-slash text-sm"></i>
+                            <template x-if="show">
+                                <i class="fa-solid fa-eye text-sm"></i>
+                            </template>
+                            <template x-if="!show">
+                                <i class="fa-solid fa-eye-slash text-sm"></i>
+                            </template>
                         </button>
                     </div>
                 </div>
