@@ -43,7 +43,7 @@
         {{-- Profile Header --}}
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-6">
 
-            <!-- {{-- Cover banner --}}
+            {{-- Cover banner --}}
             <div class="h-36 relative overflow-hidden">
                 @if($user->cover_photo)
                     <img src="{{ asset('storage/' . $user->cover_photo) }}"
@@ -51,7 +51,7 @@
                 @else
                     <div class="w-full h-full bg-gradient-to-br from-brand-700 to-brand-900"></div>
                 @endif
-            </div> -->
+            </div>
 
             <div class="px-6 pb-6">
                 <div class="flex flex-col sm:flex-row items-start sm:items-end gap-4 -mt-12 mb-5">
