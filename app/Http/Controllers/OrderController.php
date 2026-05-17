@@ -77,6 +77,7 @@ class OrderController extends Controller
 
         $order = null;
 
+        /** @var \App\Models\Order $order */
         DB::transaction(function () use ($request, $cart, &$order) {
             $subtotal    = collect($cart)->sum(fn($i) => $i['price'] * $i['quantity']);
 
