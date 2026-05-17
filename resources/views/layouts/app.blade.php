@@ -86,7 +86,7 @@
                         @if(auth()->user()->isCustomer())
                             <a href="{{ route('cart.index') }}" class="relative hover:text-accent transition">
                                 <i class="fa-solid fa-cart-shopping"></i>
-                                @php $cartCount = collect(session()->get('cart', []))->sum('quantity'); @endphp
+                                @php $cartCount = count(session()->get('cart', [])); @endphp
                                 @if($cartCount > 0)
                                     <span class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">{{ $cartCount }}</span>
                                 @endif
