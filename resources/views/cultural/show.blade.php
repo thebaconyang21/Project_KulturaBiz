@@ -54,9 +54,10 @@
         <div class="bg-gradient-to-br from-brand-700 to-brand-900 rounded-2xl mb-8 h-48 hero-pattern"></div>
     @endif
 
+    
     {{-- Story Body --}}
-    <div class="prose prose-lg max-w-none mb-10">
-        <div class="text-gray-700 leading-relaxed text-lg whitespace-pre-line">{{ $story->story }}</div>
+    <div class="prose prose-lg max-w-none mb-10"> 
+        <div class="text-gray-700 leading-relaxed text-lg whitespace-pre-line text-justify">{{ $story->story }}</div> 
     </div>
 
     {{-- Cultural Details --}}

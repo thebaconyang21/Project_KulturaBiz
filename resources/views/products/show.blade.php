@@ -140,7 +140,7 @@
             <div class="relative z-10 max-w-3xl">
                 <p class="text-accent text-xs font-bold tracking-widest uppercase mb-3">✦ Cultural Heritage Documentation</p>
                 <h2 class="font-display text-2xl font-bold mb-4">The Story Behind This Craft</h2>
-                <p class="text-brand-100 leading-relaxed mb-4">{{ $product->cultural_background }}</p>
+                <p class="text-brand-100 leading-relaxed mb-4 text-justify">{{ $product->cultural_background }}</p>
                 @if($product->culturalStory)
                     <a href="{{ route('cultural.show', $product->culturalStory->slug) }}"
                        class="inline-block border border-accent text-accent px-5 py-2 rounded-full text-sm font-medium hover:bg-accent hover:text-brand-900 transition">
