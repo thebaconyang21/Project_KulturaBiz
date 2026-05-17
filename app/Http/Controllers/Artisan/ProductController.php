@@ -5,11 +5,12 @@ namespace App\Http\Controllers\Artisan;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\Category;
-use App\Models\Order;
+use App\Models\Order; 
 use App\Models\OrderItem;
 use App\Models\CulturalStory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * Artisan\ProductController
@@ -22,7 +23,7 @@ class ProductController extends Controller
     // ─────────────────────────────────────────────────────────
     public function dashboard()
     {
-        $artisan      = auth()->user();
+        $artisan      = Auth::user();
         $myProductIds = Product::where('user_id', $artisan->id)->pluck('id');
 
         // Stat cards
@@ -85,7 +86,7 @@ class ProductController extends Controller
     // ─────────────────────────────────────────────────────────
     public function index()
     {
-        $products = Product::where('user_id', auth()->id())
+        $products = Product::where('user_id', Auth::id())
             ->with('category')
             ->latest()
             ->paginate(15);
@@ -124,7 +125,7 @@ class ProductController extends Controller
 
         $product = Product::create([
             ...$validated,
-            'user_id' => auth()->id(),
+            'user_id' => Auth::id(),
             'slug'    => $this->generateSlug($validated['name']),
             'images'  => $imagePaths,
             'status'  => 'active',
@@ -142,16 +143,16 @@ class ProductController extends Controller
 
             CulturalStory::create([
                 'product_id'      => $product->id,
-                'user_id'         => auth()->id(),
+                'user_id'         => Auth::id(),
                 'title'           => 'The Story of ' . $product->name,
                 'slug'            => 'story-' . $product->slug . '-' . uniqid(),
                 'story'           => $request->cultural_background
                                      ?? 'A beautiful handmade product from Mindanao.',
                 'tribe_community' => $request->tribe_community
-                                     ?? auth()->user()->tribe
+                                     ?? Auth::user()->tribe
                                      ?? 'Mindanaoan',
                 'location'        => $request->origin_location
-                                     ?? auth()->user()->region
+                                     ?? Auth::user()->region
                                      ?? 'Mindanao',
                 'cover_image'     => $coverImagePath,
                 'is_published'    => true,
@@ -164,14 +165,14 @@ class ProductController extends Controller
 
     public function edit(string $id)
     {
-        $product    = Product::where('id', $id)->where('user_id', auth()->id())->firstOrFail();
+        $product    = Product::where('id', $id)->where('user_id', Auth::id())->firstOrFail();
         $categories = Category::where('is_active', true)->get();
         return view('artisan.products.edit', compact('product', 'categories'));
     }
 
     public function update(Request $request, string $id)
     {
-        $product = Product::where('id', $id)->where('user_id', auth()->id())->firstOrFail();
+        $product = Product::where('id', $id)->where('user_id', Auth::id())->firstOrFail();
 
         $validated = $request->validate([
             'name'                => 'required|string|max:255',
@@ -205,7 +206,7 @@ class ProductController extends Controller
 
     public function destroy(string $id)
     {
-        $product = Product::where('id', $id)->where('user_id', auth()->id())->firstOrFail();
+        $product = Product::where('id', $id)->where('user_id', Auth::id())->firstOrFail();
 
         if ($product->images) {
             foreach ($product->images as $image) {
@@ -222,7 +223,7 @@ class ProductController extends Controller
     // ─────────────────────────────────────────────────────────
     public function orders()
     {
-        $myProductIds = Product::where('user_id', auth()->id())->pluck('id');
+        $myProductIds = Product::where('user_id', Auth::id())->pluck('id');
 
         $orders = Order::whereHas('items', fn($q) => $q->whereIn('product_id', $myProductIds))
             ->with([
@@ -239,7 +240,7 @@ class ProductController extends Controller
     {
         $request->validate(['status' => 'required|in:processing,cancelled']);
 
-        $myProductIds = Product::where('user_id', auth()->id())->pluck('id');
+        $myProductIds = Product::where('user_id', Auth::id())->pluck('id');
 
         $order = Order::whereHas('items', fn($q) => $q->whereIn('product_id', $myProductIds))
             ->findOrFail($orderId);

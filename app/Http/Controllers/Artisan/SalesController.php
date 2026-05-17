@@ -7,6 +7,7 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * SalesController
@@ -18,7 +19,7 @@ class SalesController extends Controller
     // ─── Helper: get artisan's product IDs ────────────────────
     private function myProductIds(): \Illuminate\Support\Collection
     {
-        return Product::where('user_id', auth()->id())->pluck('id');
+        return Product::where('user_id', Auth::id())->pluck('id');
     }
 
     // ─── Helper: base order query for this artisan ─────────────
@@ -193,7 +194,7 @@ class SalesController extends Controller
         }
 
         // Top selling products this year
-        $topProducts = Product::where('user_id', auth()->id())
+        $topProducts = Product::where('user_id', Auth::id())
             ->withSum([
                 'orderItems as total_sold' => function ($q) {
                     $q->whereHas('order', function ($o) {
