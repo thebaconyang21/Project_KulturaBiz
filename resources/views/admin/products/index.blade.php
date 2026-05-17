@@ -72,19 +72,19 @@
                 <tbody class="divide-y divide-gray-50">
                     @forelse($products as $product)
                         <tr class="hover:bg-gray-50">
-                            <td class="px-5 py-3 whitespace-nowrap">
-                                <div class="flex items-center gap-2">
-                                    <a href="{{ route('products.show', $product->slug) }}"
-                                    class="inline-flex items-center gap-1 bg-brand-50 text-brand-700 text-xs font-semibold px-3 py-1.5 rounded-lg border border-brand-200 hover:bg-brand-100 transition whitespace-nowrap">
-                                        <i class="solid eye"></i> View
-                                    </a>
-                                    <form method="POST" action="{{ route('admin.products.delete', $product->id) }}"
-                                        onsubmit="return confirm('Delete this product permanently?')">
-                                        @csrf @method('DELETE')
-                                        <button class="inline-flex items-center gap-1 bg-red-50 text-red-600 text-xs font-semibold px-3 py-1.5 rounded-lg border border-red-200 hover:bg-red-100 transition whitespace-nowrap">
-                                            <i class="solid trash"></i> Delete
-                                        </button>
-                                    </form>
+                            <td class="px-5 py-3">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 bg-brand-100 rounded-lg overflow-hidden">
+                                        @if($product->images && count($product->images) > 0)
+                                            <img src="{{ asset('storage/' . $product->images[0]) }}" class="w-full h-full object-cover">
+                                        @else
+                                            <div class="w-full h-full flex items-center justify-center text-lg">🎨</div>
+                                        @endif
+                                    </div>
+                                    <div>
+                                        <p class="font-medium text-gray-900 max-w-xs truncate">{{ $product->name }}</p>
+                                        <p class="text-xs text-gray-400">⭐ {{ number_format($product->average_rating, 1) }} ({{ $product->review_count }})</p>
+                                    </div>
                                 </div>
                             </td>
                             <td class="px-5 py-3 text-gray-500">{{ $product->category->name }}</td>
@@ -100,14 +100,18 @@
                                     {{ ucfirst($product->status) }}
                                 </span>
                             </td>
-                            <td class="px-5 py-3">
-                                <div class="flex gap-2">
+                            <td class="px-5 py-3 whitespace-nowrap">
+                                <div class="flex items-center gap-2">
                                     <a href="{{ route('products.show', $product->slug) }}"
-                                       class="text-xs text-brand-600 hover:underline">View</a>
+                                    class="inline-flex items-center gap-1 bg-brand-50 text-brand-700 text-xs font-semibold px-3 py-1.5 rounded-lg border border-brand-200 hover:bg-brand-100 transition whitespace-nowrap">
+                                        <i class="fa-solid fa-eye"></i> View
+                                    </a>
                                     <form method="POST" action="{{ route('admin.products.delete', $product->id) }}"
-                                          onsubmit="return confirm('Delete this product permanently?')">
+                                        onsubmit="return confirm('Delete this product permanently?')">
                                         @csrf @method('DELETE')
-                                        <button class="text-xs text-red-400 hover:text-red-600">🗑 Delete</button>
+                                        <button class="inline-flex items-center gap-1 bg-red-50 text-red-600 text-xs font-semibold px-3 py-1.5 rounded-lg border border-red-200 hover:bg-red-100 transition whitespace-nowrap">
+                                            <i class="fa-solid fa-trash"></i> Delete
+                                        </button>
                                     </form>
                                 </div>
                             </td>
