@@ -5,7 +5,7 @@
 @section('content')
 
 {{-- HERO SECTIONnnnnn --}}
-<section class="text-white py-24 relative overflow-hidden" style="background: url('{{ asset('images/hero-bg.jpg') }}') center center / cover no-repeat;">
+<section class="text-white py-24 relative overflow-hidden" style="background-image: url('{{ asset('images/hero-bg.jpg') }}'); background-position: center; background-size: cover; background-repeat: no-repeat;">
     <div class="absolute inset-0" style="background: linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.65) 100%);"></div>
     <div class="max-w-7xl mx-auto px-4 relative z-10">
         <div class="max-w-3xl">

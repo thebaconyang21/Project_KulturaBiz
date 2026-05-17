@@ -137,7 +137,7 @@
     @if($product->cultural_background || $product->culturalStory)
         <div class="bg-brand-700 text-white rounded-2xl p-8 mb-12 relative overflow-hidden">
             <div class="absolute inset-0 hero-pattern opacity-20"></div>
-            <div class="relative z-10 max-w-3xl">
+            <div class="relative z-10">
                 <p class="text-accent text-xs font-bold tracking-widest uppercase mb-3">✦ Cultural Heritage Documentation</p>
                 <h2 class="font-display text-2xl font-bold mb-4">The Story Behind This Craft</h2>
                 <p class="text-brand-100 leading-relaxed mb-4 text-justify">{{ $product->cultural_background }}</p>
