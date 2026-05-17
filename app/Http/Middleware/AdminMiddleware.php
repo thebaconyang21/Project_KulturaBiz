@@ -2,9 +2,11 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\User;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\Auth;
 
 
 /**
@@ -14,8 +16,11 @@ use Symfony\Component\HttpFoundation\Response;
 class AdminMiddleware
 {
     public function handle(Request $request, Closure $next): Response
-    {
-        if (!auth()->check() || !auth()->user()->isAdmin()) {
+    {   
+        /** @var User|null $user */
+        $user = Auth::user();
+
+        if (!$user || !$user->isAdmin()) {
             abort(403, 'Access denied. Admins only.');
         }
        
