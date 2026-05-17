@@ -14,16 +14,16 @@
         </div>
         <nav class="space-y-1 px-3">
             @foreach([
-                ['admin.dashboard',  '📊', 'Dashboard'],
-                ['admin.users',      '👥', 'Users'],
-                ['admin.products',   '📦', 'Products'],
-                ['admin.categories', '🏷️', 'Categories'],
-                ['admin.orders',     '🛒', 'Orders'],
+                ['admin.dashboard', 'gauge', 'Dashboard'],
+                ['admin.users', 'users', 'Users'],
+                ['admin.products', 'box', 'Products'],
+                ['admin.categories', 'layer-group', 'Categories'],
+                ['admin.orders', 'cart-shopping', 'Orders'],
             ] as [$route, $icon, $label])
                 <a href="{{ route($route) }}"
-                   class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition
-                          {{ request()->routeIs($route) ? 'bg-brand-700 text-white font-semibold' : 'text-brand-200 hover:bg-brand-800 hover:text-white' }}">
-                    {{ $icon }} {{ $label }}
+                class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition
+                        {{ request()->routeIs($route) ? 'bg-brand-700 text-white font-semibold' : 'text-brand-200 hover:bg-brand-800 hover:text-white' }}">
+                    <i class="fa-solid fa-{{ $icon }} text-xl"></i> {{ $label }}
                 </a>
             @endforeach
         </nav>
@@ -43,7 +43,7 @@
         {{-- Profile Header --}}
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-6">
 
-            {{-- Cover banner --}}
+            <!-- {{-- Cover banner --}}
             <div class="h-36 relative overflow-hidden">
                 @if($user->cover_photo)
                     <img src="{{ asset('storage/' . $user->cover_photo) }}"
@@ -51,7 +51,7 @@
                 @else
                     <div class="w-full h-full bg-gradient-to-br from-brand-700 to-brand-900"></div>
                 @endif
-            </div>
+            </div> -->
 
             <div class="px-6 pb-6">
                 <div class="flex flex-col sm:flex-row items-start sm:items-end gap-4 -mt-12 mb-5">
@@ -171,15 +171,15 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
                     <p class="text-xs text-gray-400 mb-1">Total Products</p>
-                    <p class="font-display text-2xl font-bold text-blue-600">{{ $products->count() }}</p>
+                    <p class="font-display text-2xl font-bold text-brown-900">{{ $products->count() }}</p>
                 </div>
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
                     <p class="text-xs text-gray-400 mb-1">Total Orders</p>
-                    <p class="font-display text-2xl font-bold text-purple-600">{{ $totalOrders }}</p>
+                    <p class="font-display text-2xl font-bold text-brown-900">{{ $totalOrders }}</p>
                 </div>
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
                     <p class="text-xs text-gray-400 mb-1">Revenue (Delivered)</p>
-                    <p class="font-display text-2xl font-bold text-brand-600">₱{{ number_format($totalSales, 2) }}</p>
+                    <p class="font-display text-2xl font-bold text-brown-900">₱{{ number_format($totalSales, 2) }}</p>
                 </div>
             </div>
 
