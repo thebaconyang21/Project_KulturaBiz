@@ -97,7 +97,9 @@
                                         <form method="POST" action="{{ route('admin.categories.delete', $category->id) }}"
                                               onsubmit="return confirm('Delete category \'{{ $category->name }}\'? This cannot be undone.')">
                                             @csrf @method('DELETE')
-                                            <button class="text-xs text-red-400 hover:text-red-600 transition">🗑 Delete</button>
+                                            <button class="inline-flex items-center gap-1 bg-red-50 text-red-600 text-xs font-semibold px-3 py-1.5 rounded-lg border border-red-200 hover:bg-red-100 transition whitespace-nowrap">
+                                                <i class="fa-solid fa-trash"></i> Delete
+                                            </button>
                                         </form>
                                     </td>
                                 </tr>
