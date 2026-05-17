@@ -121,17 +121,23 @@
                                     @if($user->role === 'artisan' && $user->status === 'pending')
                                         <form method="POST" action="{{ route('admin.users.approve', $user->id) }}">
                                             @csrf @method('PATCH')
-                                            <button class="badge-success cursor-pointer hover:bg-green-200 transition">✅ Approve</button>
+                                            <button class="inline-flex items-center gap-1 bg-green-50 text-green-700 text-xs font-semibold px-3 py-1.5 rounded-lg border border-green-200 hover:bg-green-100 transition whitespace-nowrap">
+                                                <i class="fa-solid fa-circle-check"></i> Approve
+                                            </button>
                                         </form>
                                         <form method="POST" action="{{ route('admin.users.reject', $user->id) }}">
                                             @csrf @method('PATCH')
-                                            <button class="badge-danger cursor-pointer hover:bg-red-200 transition">❌ Reject</button>
+                                            <button class="inline-flex items-center gap-1 bg-red-50 text-red-600 text-xs font-semibold px-3 py-1.5 rounded-lg border border-red-200 hover:bg-red-100 transition whitespace-nowrap">
+                                                <i class="fa-solid fa-circle-xmark"></i> Reject
+                                            </button>
                                         </form>
                                     @endif
                                     <form method="POST" action="{{ route('admin.users.delete', $user->id) }}"
-                                          onsubmit="return confirm('Delete {{ $user->name }}? This cannot be undone.')">
+                                        onsubmit="return confirm('Delete {{ $user->name }}? This cannot be undone.')">
                                         @csrf @method('DELETE')
-                                        <button class="text-xs text-red-400 hover:text-red-600 transition">🗑 Delete</button>
+                                        <button class="inline-flex items-center gap-1 bg-red-50 text-red-600 text-xs font-semibold px-3 py-1.5 rounded-lg border border-red-200 hover:bg-red-100 transition whitespace-nowrap">
+                                            <i class="fa-solid fa-trash"></i> Delete
+                                        </button>
                                     </form>
                                 </div>
                             </td>
