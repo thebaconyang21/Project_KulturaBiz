@@ -91,6 +91,47 @@ class DashboardController extends Controller
         return view('admin.users.index', compact('users'));
     }
 
+    public function showUser(string $id)
+    {
+        $user = User::findOrFail($id);
+
+        // Get products if artisan
+        $products = collect();
+        $totalSales = 0;
+        $totalOrders = 0;
+
+        if ($user->isArtisan()) {
+            $products = \App\Models\Product::where('user_id', $user->id)
+                ->with('category')
+                ->latest()
+                ->get();
+
+            $myProductIds = $products->pluck('id');
+
+            $totalOrders = \App\Models\OrderItem::whereIn('product_id', $myProductIds)
+                ->distinct('order_id')
+                ->count('order_id');
+
+            $totalSales = \App\Models\OrderItem::whereIn('product_id', $myProductIds)
+                ->whereHas('order', fn($q) => $q->where('status', 'delivered'))
+                ->sum('subtotal');
+        }
+
+        // Get orders if customer
+        $orders = collect();
+        if ($user->isCustomer()) {
+            $orders = \App\Models\Order::where('user_id', $user->id)
+                ->with('items')
+                ->latest()
+                ->take(10)
+                ->get();
+        }
+
+        return view('admin.users.show', compact('user', 'products', 'totalSales', 'totalOrders', 'orders'));
+    }
+
+    
+
     public function approveArtisan(string $id)
     {
         $user = User::where('id', $id)->where('role', 'artisan')->firstOrFail();

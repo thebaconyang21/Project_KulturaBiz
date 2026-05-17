@@ -97,6 +97,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
 
     Route::get('/users', [AdminController::class, 'users'])->name('users');
+    Route::get('/users/{id}', [AdminController::class, 'showUser'])->name('users.show');
     Route::patch('/users/{id}/approve', [AdminController::class, 'approveArtisan'])->name('users.approve');
     Route::patch('/users/{id}/reject', [AdminController::class, 'rejectArtisan'])->name('users.reject');
     Route::delete('/users/{id}', [AdminController::class, 'deleteUser'])->name('users.delete');

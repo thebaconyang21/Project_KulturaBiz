@@ -90,7 +90,10 @@
                                 <div class="flex items-center gap-3">
                                     <img src="{{ $user->profile_photo_url }}" alt="" class="w-9 h-9 rounded-full">
                                     <div>
-                                        <p class="font-medium text-gray-900">{{ $user->name }}</p>
+                                        <a href="{{ route('admin.users.show', $user->id) }}"
+                                        class="font-medium text-gray-900 hover:text-brand-700 hover:underline transition">
+                                            {{ $user->name }}
+                                        </a>
                                         <p class="text-xs text-gray-400">{{ $user->email }}</p>
                                     </div>
                                 </div>
