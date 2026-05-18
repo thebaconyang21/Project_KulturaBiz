@@ -6,28 +6,6 @@
 
 <div class="flex min-h-screen">
 
-    <!-- {{-- Sidebar --}}
-    <aside class="w-56 bg-brand-900 text-white shrink-0 min-h-screen pt-6 hidden lg:block">
-        <div class="px-5 mb-8">
-            <p class="text-brand-300 text-xs font-bold uppercase tracking-widest mb-1">Administration</p>
-            <p class="text-white font-semibold text-sm">{{ auth()->user()->name }}</p>
-        </div>
-        <nav class="space-y-1 px-3">
-            @foreach([
-                ['admin.dashboard', '', 'Dashboard'],
-                ['admin.users',     '', 'Users'],
-                ['admin.products',  '', 'Products'],
-                ['admin.categories','', 'Categories'],
-                ['admin.orders',    '', 'Orders'],
-            ] as [$route, $icon, $label])
-                <a href="{{ route($route) }}"
-                   class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition
-                          {{ request()->routeIs($route) ? 'bg-brand-700 text-white font-semibold' : 'text-brand-200 hover:bg-brand-800 hover:text-white' }}">
-                    {{ $icon }} {{ $label }}
-                </a>
-            @endforeach
-        </nav>
-    </aside> -->
         {{-- Admin Sidebar --}}
     <aside class="w-56 bg-brand-900 text-white shrink-0 min-h-screen pt-6 hidden lg:block">
         <div class="px-5 mb-8">
@@ -135,13 +113,10 @@
                                             </button>
                                         </form>
                                     @endif
-                                    <form method="POST" action="{{ route('admin.users.delete', $user->id) }}"
-                                        onsubmit="return confirm('Delete {{ $user->name }}? This cannot be undone.')">
-                                        @csrf @method('DELETE')
-                                        <button class="inline-flex items-center gap-1 bg-red-50 text-red-600 text-xs font-semibold px-3 py-1.5 rounded-lg border border-red-200 hover:bg-red-100 transition whitespace-nowrap">
-                                            <i class="fa-solid fa-trash"></i> Delete
-                                        </button>
-                                    </form>
+                                    <button onclick="openDeleteModal('{{ route('admin.users.delete', $user->id) }}', 'Are you sure you want to delete {{ addslashes($user->name) }}? This cannot be undone.')"
+                                            class="inline-flex items-center gap-1 bg-red-50 text-red-600 text-xs font-semibold px-3 py-1.5 rounded-lg border border-red-200 hover:bg-red-100 transition whitespace-nowrap">
+                                        <i class="fa-solid fa-trash"></i> Delete
+                                    </button>
                                 </div>
                             </td>
                         </tr>

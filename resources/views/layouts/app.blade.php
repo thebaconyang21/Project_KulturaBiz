@@ -67,7 +67,7 @@
     {{-- NAVBAR --}}
     <nav class="bg-brand-700 text-white shadow-lg sticky top-0 z-50" x-data="{ mobileOpen: false }">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16">
+            <div class="flex items-center justify-between h-16">xa
 
                 {{-- Logo --}}
                 <a href="{{ route('home') }}" class="flex items-center gap-2">
@@ -215,5 +215,65 @@
     </footer>
 
     @yield('scripts')
+
+    {{-- Delete Confirmation Modal --}}
+    <div id="deleteModal"
+        class="fixed inset-0 z-50 hidden items-center justify-center"
+        style="background: rgba(0,0,0,0.5);">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-sm w-full mx-4 transform transition-all">
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fa-solid fa-triangle-exclamation text-red-500 text-2xl"></i>
+                </div>
+                <h3 class="font-display text-xl font-bold text-gray-900 mb-2">
+                    Confirm Delete
+                </h3>
+                <p id="deleteModalMessage" class="text-gray-500 text-sm">
+                    Are you sure you want to delete this? This action cannot be undone.
+                </p>
+            </div>
+            <div class="flex gap-3">
+                <button onclick="closeDeleteModal()"
+                        class="flex-1 px-4 py-2.5 border border-gray-200 text-gray-600 font-semibold rounded-xl hover:bg-gray-50 transition">
+                    Cancel
+                </button>
+                <form id="deleteModalForm" method="POST" class="flex-1">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit"
+                            class="w-full px-4 py-2.5 bg-red-600 text-white font-semibold rounded-xl hover:bg-red-700 transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-trash"></i>
+                        Delete
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    function openDeleteModal(action, message) {
+        document.getElementById('deleteModalForm').action = action;
+        document.getElementById('deleteModalMessage').textContent = message || 'Are you sure you want to delete this? This action cannot be undone.';
+        const modal = document.getElementById('deleteModal');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+
+    function closeDeleteModal() {
+        const modal = document.getElementById('deleteModal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
+
+    // Close modal when clicking outside
+    document.getElementById('deleteModal').addEventListener('click', function(e) {
+        if (e.target === this) closeDeleteModal();
+    });
+
+    // Close on Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closeDeleteModal();
+    });
+    </script>
 </body>
 </html>

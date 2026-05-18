@@ -106,13 +106,10 @@
                                     class="inline-flex items-center gap-1 bg-brand-50 text-brand-700 text-xs font-semibold px-3 py-1.5 rounded-lg border border-brand-200 hover:bg-brand-100 transition whitespace-nowrap">
                                         <i class="fa-solid fa-eye"></i> View
                                     </a>
-                                    <form method="POST" action="{{ route('admin.products.delete', $product->id) }}"
-                                        onsubmit="return confirm('Delete this product permanently?')">
-                                        @csrf @method('DELETE')
-                                        <button class="inline-flex items-center gap-1 bg-red-50 text-red-600 text-xs font-semibold px-3 py-1.5 rounded-lg border border-red-200 hover:bg-red-100 transition whitespace-nowrap">
-                                            <i class="fa-solid fa-trash"></i> Delete
-                                        </button>
-                                    </form>
+                                    <button onclick="openDeleteModal('{{ route('admin.products.delete', $product->id) }}', 'Are you sure you want to delete {{ addslashes($product->name) }}? This cannot be undone.')"
+                                            class="inline-flex items-center gap-1 bg-red-50 text-red-600 text-xs font-semibold px-3 py-1.5 rounded-lg border border-red-200 hover:bg-red-100 transition whitespace-nowrap">
+                                        <i class="fa-solid fa-trash"></i> Delete
+                                    </button>
                                 </div>
                             </td>
                         </tr>

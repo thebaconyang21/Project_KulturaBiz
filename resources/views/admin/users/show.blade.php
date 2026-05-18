@@ -43,18 +43,11 @@
         {{-- Profile Header --}}
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-6">
 
-            {{-- Cover banner --}}
-            <div class="h-36 relative overflow-hidden">
-                @if($user->cover_photo)
-                    <img src="{{ asset('storage/' . $user->cover_photo) }}"
-                         class="w-full h-full object-cover">
-                @else
-                    <div class="w-full h-full bg-gradient-to-br from-brand-700 to-brand-900"></div>
-                @endif
-            </div>
+            {{-- Top accent bar --}}
+            <div class="h-3 bg-gradient-to-r from-brand-700 to-brand-500"></div>
 
             <div class="px-6 pb-6">
-                <div class="flex flex-col sm:flex-row items-start sm:items-end gap-4 -mt-12 mb-5">
+                <div class="flex flex-col sm:flex-row items-start sm:items-end gap-4 mt-4 mb-5">
                     {{-- Profile photo --}}
                     <img src="{{ $user->profile_photo_url }}"
                          alt="{{ $user->name }}"

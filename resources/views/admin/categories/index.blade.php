@@ -94,13 +94,10 @@
                                         <span class="badge-secondary">{{ $category->products_count }} products</span>
                                     </td>
                                     <td class="px-5 py-3">
-                                        <form method="POST" action="{{ route('admin.categories.delete', $category->id) }}"
-                                              onsubmit="return confirm('Delete category \'{{ $category->name }}\'? This cannot be undone.')">
-                                            @csrf @method('DELETE')
-                                            <button class="inline-flex items-center gap-1 bg-red-50 text-red-600 text-xs font-semibold px-3 py-1.5 rounded-lg border border-red-200 hover:bg-red-100 transition whitespace-nowrap">
-                                                <i class="fa-solid fa-trash"></i> Delete
-                                            </button>
-                                        </form>
+                                        <button onclick="openDeleteModal('{{ route('admin.categories.delete', $category->id) }}', 'Are you sure you want to delete the category {{ addslashes($category->name) }}? This cannot be undone.')"
+                                                class="inline-flex items-center gap-1 bg-red-50 text-red-600 text-xs font-semibold px-3 py-1.5 rounded-lg border border-red-200 hover:bg-red-100 transition whitespace-nowrap">
+                                            <i class="fa-solid fa-trash"></i> Delete
+                                        </button>
                                     </td>
                                 </tr>
                             @empty
