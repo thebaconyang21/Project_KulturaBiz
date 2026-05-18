@@ -114,10 +114,14 @@
                                             </button>
                                         </form>
                                     @endif
-                                    <button onclick="openDeleteModal('{{ route('admin.users.delete', $user->id) }}', 'Are you sure you want to delete {{ addslashes($user->name) }}? This cannot be undone.')"
-                                            class="inline-flex items-center gap-1 bg-red-50 text-red-600 text-xs font-semibold px-3 py-1.5 rounded-lg border border-red-200 hover:bg-red-100 transition whitespace-nowrap">
-                                        <i class="fa-solid fa-trash"></i> Delete
-                                    </button>
+                                    <form method="POST" action="{{ route('admin.users.delete', $user->id) }}">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button onclick="openDeleteModal('{{ route('admin.users.delete', $user->id) }}', 'Are you sure you want to delete {{ addslashes($user->name) }}? This cannot be undone.')"
+                                                class="inline-flex items-center gap-1 bg-red-50 text-red-600 text-xs font-semibold px-3 py-1.5 rounded-lg border border-red-200 hover:bg-red-100 transition whitespace-nowrap">
+                                            <i class="fa-solid fa-trash"></i> Delete
+                                        </button>
+                                    </form>
                                 </div>
                             </td>
                         </tr>
