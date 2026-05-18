@@ -78,15 +78,45 @@
 
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Password *</label>
-                        <input type="password" name="password" required
-                               class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400"
-                               placeholder="Minimum 8 characters">
+                        <div class="relative" x-data="{ show: false }">
+                            <input :type="show ? 'text' : 'password'"
+                                name="password" required
+                                class="w-full border border-gray-200 rounded-xl px-4 py-2.5 pr-11 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 transition"
+                                placeholder="Minimum 8 characters">
+
+                            <button type="button"
+                                    @click="show = !show"
+                                    class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-brand-600 transition focus:outline-none">
+
+                                {{-- Password hidden --}}
+                                <i x-show="!show" class="fa-solid fa-eye-slash text-sm"></i>
+
+                                {{-- Password visible --}}
+                                <i x-show="show" class="fa-solid fa-eye text-sm"></i>
+
+                            </button>
+                        </div>
                     </div>
 
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Confirm Password *</label>
-                        <input type="password" name="password_confirmation" required
-                               class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400">
+                        <div class="relative" x-data="{ show: false }">
+                            <input :type="show ? 'text' : 'password'"
+                                name="password_confirmation" required
+                                class="w-full border border-gray-200 rounded-xl px-4 py-2.5 pr-11 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400 transition">
+
+                            <button type="button"
+                                    @click="show = !show"
+                                    class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-brand-600 transition focus:outline-none">
+
+                                {{-- Hidden password --}}
+                                <i x-show="!show" class="fa-solid fa-eye-slash text-sm"></i>
+
+                                {{-- Visible password --}}
+                                <i x-show="show" class="fa-solid fa-eye text-sm"></i>
+
+                            </button>
+                        </div>
                     </div>
                 </div>
 
