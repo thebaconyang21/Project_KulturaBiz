@@ -53,7 +53,7 @@
                 @if($product->stock > 0)
                     <span class="badge-success">In Stock ({{ $product->stock }} available)</span>
                 @else
-                    <span class="badge-danger">Out of Stock</span>
+                    <span class="badge-danger">(Out of Stock)</span>
                 @endif
             </div>
 
