@@ -106,7 +106,7 @@
 
                         <div class="w-24 bg-gray-100 rounded-full h-2">
                             <div class="bg-brand-500 h-2 rounded-full"
-                                style="width: {{$totalOrders > 0 ? ($count / $totalOrders) * 100 : 0}}%;">
+                                style="width: {{$totalOrders > 0 ? ($count / $totalOrders) * 100 : 0}}%">
                             </div>
                         </div>
 
