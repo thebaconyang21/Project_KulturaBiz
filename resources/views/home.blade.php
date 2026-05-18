@@ -4,7 +4,7 @@
 
 @section('content')
 
-{{-- HERO SECTIONnnnnn --}}
+{{-- HERO SECTION --}}
 <section class="text-white py-24 relative overflow-hidden" style="background-image: url('{{ asset('images/hero-bg.jpg') }}'); background-position: center; background-size: cover; background-repeat: no-repeat;">
     <div class="absolute inset-0" style="background: linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.65) 100%);"></div>
     <div class="max-w-7xl mx-auto px-4 relative z-10">
@@ -198,7 +198,8 @@
     </div>
 </section>
 
-{{-- CTA SECTION --}}
+@guest
+{{-- CTA SECTION — only show to visitors not yet logged in --}}
 <section class="bg-accent py-16">
     <div class="max-w-4xl mx-auto px-4 text-center">
         <h2 class="font-display text-4xl font-bold text-brand-900 mb-4">Are You a Mindanaoan Artisan?</h2>
@@ -211,5 +212,6 @@
         </a>
     </div>
 </section>
+@endguest
 
 @endsection
