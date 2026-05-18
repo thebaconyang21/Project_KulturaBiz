@@ -30,6 +30,7 @@
                 ['admin.products', 'box', 'Products'],
                 ['admin.categories', 'layer-group', 'Categories'],
                 ['admin.orders', 'cart-shopping', 'Orders'],
+                ['admin.cultural.index', '📖', 'Cultural Stories'],
             ] as [$route, $icon, $label])
                 <a href="{{ route($route) }}"
                    class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition

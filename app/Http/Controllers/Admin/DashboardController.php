@@ -277,4 +277,22 @@ class DashboardController extends Controller
 
         return back()->with('success', "Order #{$order->order_number} status updated to {$request->status}.");
     }
+
+    public function culturalStories()
+    {
+        $stories = \App\Models\CulturalStory::with('author')
+            ->latest()
+            ->paginate(20);
+
+        return view('admin.cultural.index', compact('stories'));
+    }
+
+    public function toggleFeatured(string $id)
+    {
+        $story = \App\Models\CulturalStory::findOrFail($id);
+        $story->update(['is_featured' => !$story->is_featured]);
+
+        $status = $story->is_featured ? 'featured' : 'unfeatured';
+        return back()->with('success', "Story \"{$story->title}\" is now {$status}.");
+    }
 }

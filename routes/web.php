@@ -111,4 +111,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     Route::get('/orders', [AdminController::class, 'orders'])->name('orders');
     Route::patch('/orders/{id}/status', [AdminController::class, 'updateOrderStatus'])->name('orders.status');
+
+    Route::get('/cultural-stories', [AdminController::class, 'culturalStories'])->name('cultural.index');
+    Route::patch('/cultural-stories/{id}/toggle-featured', [AdminController::class, 'toggleFeatured'])->name('cultural.toggle-featured');
 });
