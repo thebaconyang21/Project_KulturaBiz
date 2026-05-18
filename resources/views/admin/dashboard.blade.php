@@ -77,16 +77,41 @@
             {{-- Orders by Status --}}
             <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                 <h2 class="font-semibold text-gray-900 mb-4">Orders by Status</h2>
-                @foreach(['pending' => '', 'processing' => '', 'shipped' => '', 'delivered' => '', 'cancelled' => ''] as $status => $icon)
-                    @php $count = $ordersByStatus[$status] ?? 0; @endphp
+
+                @foreach([
+                    'pending' => 'clock',
+                    'processing' => 'gear',
+                    'shipped' => 'truck',
+                    'delivered' => 'circle-check',
+                    'cancelled' => 'circle-xmark'
+                ] as $status => $icon)
+
+                    @php
+                        $count = $ordersByStatus[$status] ?? 0;
+                    @endphp
+
                     <div class="flex items-center gap-3 py-2 border-b border-gray-50 last:border-0">
-                        <span class="text-lg"><i class="fa-solid fa-{{ $icon }} text-xl"></i></span>
-                        <span class="flex-1 text-sm text-gray-600 capitalize">{{ $status }}</span>
-                        <span class="font-bold text-gray-900">{{ $count }}</span>
+
+                        <span class="text-lg">
+                            <i class="fa-solid fa-{{ $icon }} text-xl"></i>
+                        </span>
+
+                        <span class="flex-1 text-sm text-gray-600 capitalize">
+                            {{ ucfirst($status) }}
+                        </span>
+
+                        <span class="font-bold text-gray-900">
+                            {{ $count }}
+                        </span>
+
                         <div class="w-24 bg-gray-100 rounded-full h-2">
-                            <div class="bg-brand-500 h-2 rounded-full" style="width: {{ $totalOrders > 0 ? ($count / $totalOrders * 100) : 0 }}%"></div>
+                            <div class="bg-brand-500 h-2 rounded-full"
+                                style="width: {{$totalOrders > 0 ? ($count / $totalOrders) * 100 : 0}}%;">
+                            </div>
                         </div>
+
                     </div>
+
                 @endforeach
             </div>
 
