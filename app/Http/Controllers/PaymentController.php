@@ -55,10 +55,9 @@ class PaymentController extends Controller
 
             if (!$result['success']) {
                 return redirect()->route('cart.index')
-                    ->with('error', 'Payment could not be initiated. Please try again.');
+                    ->with('error', $result['message'] ?? 'Payment could not be initiated. Please try again.');
             }
 
-            
             $order->update([
                 'payment_intent_id' => $result['payment_intent_id'] ?? null,
             ]);
@@ -67,21 +66,15 @@ class PaymentController extends Controller
 
         } catch (\Exception $e) {
             Log::error('[Payment] Initiate error: ' . $e->getMessage());
-
-            
-            $intentId    = 'pi_sim_' . strtolower(uniqid());
-            $checkoutUrl = route('payments.simulate', [
-                'order'     => $order->id,
-                'intent_id' => $intentId,
-            ]);
-
-            return redirect($checkoutUrl);
+            return redirect()->route('orders.mine')
+                ->with('error', 'Payment could not be initiated. Please try again or choose Cash on Delivery.');
         }
     }
 
-   
-    public function simulatePage(Request $request, Order $order)
+    public function simulatePage(Order $order)
     {
+        abort_unless($this->payment->isSimulationEnabled(), 404);
+
         if ($order->user_id !== Auth::id()) {
             abort(403);
         }
@@ -92,52 +85,33 @@ class PaymentController extends Controller
     }
 
 
-    public function processSimulated(Request $request, string $order)
+    public function processSimulated(string $order)
     {
+        abort_unless($this->payment->isSimulationEnabled(), 404);
+
         $orderModel = Order::findOrFail($order);
 
-        
         if ($orderModel->user_id !== Auth::id()) {
             abort(403);
         }
 
-        try {
-            
-            $orderModel->update([
-                'payment_status'     => 'paid',
-                'payment_intent_id'  => $request->input('intent_id'),
-                'courier_name'       => null, 
-                'tracking_number'    => null, 
-                'estimated_delivery' => null, 
-            ]);
+        abort_if($orderModel->payment_method === 'cod', 404);
 
-            Log::info('[Payment] GCash/Bank payment confirmed — awaiting courier assignment', [
-                'order'  => $orderModel->order_number,
-                'method' => $orderModel->payment_method,
-            ]);
+        Log::info('[Payment] Demo payment submitted; no payment was processed.', [
+            'order' => $orderModel->order_number,
+            'method' => $orderModel->payment_method,
+        ]);
 
-            
-            try {
-                $this->notify->orderPlaced($orderModel->fresh());
-                $this->notify->newOrderForArtisan($orderModel->fresh());
-            } catch (\Exception $e) {
-                Log::info('[Payment] Notification skipped: ' . $e->getMessage());
-            }
-
-        } catch (\Exception $e) {
-            Log::error('[Payment] processSimulated error: ' . $e->getMessage());
-            
-        }
-
-        
         return redirect()
             ->route('orders.confirmation', $orderModel->id)
-            ->with('success', 'Payment successful! Your order is confirmed.');
+            ->with('payment_notice', 'Demo only: no payment was processed. This order remains unpaid.');
     }
 
 
     public function callback(Request $request, Order $order)
     {
+        abort_unless($this->payment->isRealPaymentsEnabled(), 404);
+
         $intentId = $request->query('payment_intent_id')
             ?? $order->payment_intent_id;
 
@@ -179,6 +153,8 @@ class PaymentController extends Controller
  
     public function webhook(Request $request)
     {
+        abort_unless($this->payment->isRealPaymentsEnabled(), 404);
+
         $signature = $request->header('Paymongo-Signature');
         $payload   = $request->getContent();
 

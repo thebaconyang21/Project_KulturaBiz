@@ -9,14 +9,7 @@ use Illuminate\Support\Facades\Log;
 /**
  * PaymentService
  *
- * Simulates the PayMongo Philippines API (GCash, Maya, Cards).
- * Real endpoint:  https://api.paymongo.com/v1/
- * Docs:           https://developers.paymongo.com/
- *
- * PayPal integration stub also included.
- *
- * To go live: set PAYMONGO_SECRET_KEY in .env and USE_REAL_PAYMENT=true.
- * Method signatures are identical — only the HTTP layer changes.
+ * Handles PayMongo payments and an explicitly enabled local demo flow.
  */
 class PaymentService
 {
@@ -57,7 +50,31 @@ class PaymentService
             return $this->createPaymentIntentReal($order);
         }
 
-        return $this->createPaymentIntentSimulated($order);
+        if (!$this->isSimulationEnabled()) {
+            return [
+                'success' => false,
+                'status'  => 'disabled',
+                'message' => 'Online payments are not currently available.',
+            ];
+        }
+
+        return [
+            'success'           => true,
+            'payment_intent_id' => null,
+            'checkout_url'      => route('payments.simulate', ['order' => $order->id]),
+            'status'            => 'demo',
+        ];
+    }
+
+    public function isRealPaymentsEnabled(): bool
+    {
+        return (bool) config('services.paymongo.use_real');
+    }
+
+    public function isSimulationEnabled(): bool
+    {
+        return !$this->isRealPaymentsEnabled()
+            && (bool) config('services.paymongo.simulation_enabled');
     }
 
     /**
@@ -70,7 +87,12 @@ class PaymentService
             return $this->verifyPaymentReal($paymentIntentId);
         }
 
-        return $this->verifyPaymentSimulated($paymentIntentId);
+        return [
+            'success'           => false,
+            'payment_intent_id' => $paymentIntentId,
+            'status'            => 'unverified',
+            'message'           => 'Simulated payments cannot be verified as paid.',
+        ];
     }
 
     /**
@@ -96,65 +118,6 @@ class PaymentService
     }
 
     // ─────────────────────────────────────────
-    // SIMULATED IMPLEMENTATION
-    // Mirrors PayMongo API response shapes exactly.
-    // ─────────────────────────────────────────
-
-    private function createPaymentIntentSimulated(Order $order): array
-    {
-        // Simulate a 5% failure rate (realistic for testing)
-        $willSucceed = rand(1, 100) <= 95;
-
-        if (!$willSucceed) {
-            return [
-                'success' => false,
-                'status'  => 'failed',
-                'message' => 'Payment declined. Please try again or use a different method.',
-                'error'   => ['code' => 'insufficient_funds', 'detail' => 'Simulated decline.'],
-            ];
-        }
-
-        // Mirrors PayMongo PaymentIntent object structure
-        $intentId = 'pi_sim_' . strtolower(uniqid()) . '_' . rand(1000, 9999);
-        $clientKey = $intentId . '_client_' . md5($order->id . $order->total_amount);
-
-        $checkoutUrl = route('payments.simulate', [
-            'order'     => $order->id,
-            'intent_id' => $intentId,
-            'method'    => $order->payment_method,
-        ]);
-
-        Log::info('[PaymentService] Payment intent created (simulated)', [
-            'order'      => $order->order_number,
-            'intent_id'  => $intentId,
-            'amount'     => $order->total_amount,
-            'method'     => $order->payment_method,
-        ]);
-
-        return [
-            'success'           => true,
-            'payment_intent_id' => $intentId,
-            'client_key'        => $clientKey,
-            'checkout_url'      => $checkoutUrl,
-            'status'            => 'awaiting_payment_method',
-            'amount'            => $order->total_amount * 100, // PayMongo uses centavos
-            'currency'          => 'PHP',
-            'method'            => $order->payment_method,
-        ];
-    }
-
-    private function verifyPaymentSimulated(string $paymentIntentId): array
-    {
-        // Always succeed on verify in simulation (user already saw success page)
-        return [
-            'success'           => true,
-            'payment_intent_id' => $paymentIntentId,
-            'status'            => 'succeeded',
-            'paid_at'           => now()->toIso8601String(),
-            'receipt_url'       => '#simulated-receipt',
-        ];
-    }
-
     private function refundSimulated(Order $order, float $amount): array
     {
         $refundId = 're_sim_' . strtolower(uniqid());

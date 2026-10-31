@@ -26,6 +26,7 @@ return [
     */
     'paymongo' => [
         'use_real'       => env('USE_REAL_PAYMENT', false),
+        'simulation_enabled' => env('PAYMENT_SIMULATION_ENABLED', env('APP_ENV', 'production') !== 'production'),
         'public_key'     => env('PAYMONGO_PUBLIC_KEY', ''),
         'secret_key'     => env('PAYMONGO_SECRET_KEY', ''),
         'webhook_secret' => env('PAYMONGO_WEBHOOK_SECRET', ''),

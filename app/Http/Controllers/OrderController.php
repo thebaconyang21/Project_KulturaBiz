@@ -12,6 +12,7 @@ use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 /**
  * OrderController
@@ -38,19 +39,15 @@ class OrderController extends Controller
         $shippingFee = 150.00;
         $total       = $subtotal + $shippingFee;
 
-        // Get available payment methods
-        $paymentMethods = [
-            'cod'           => ['label' => 'Cash on Delivery',  'icon' => '💵', 'desc' => 'Pay when your order arrives'],
-            'gcash'         => ['label' => 'GCash',             'icon' => '📱', 'desc' => 'Mobile wallet (PayMongo)'],
-            'maya'          => ['label' => 'Maya',              'icon' => '💳', 'desc' => 'Maya wallet (PayMongo)'],
-            'bank_transfer' => ['label' => 'Bank Transfer',     'icon' => '🏦', 'desc' => 'Direct bank deposit'],
-        ];
+        $paymentMethods = $this->availablePaymentMethods();
 
         return view('orders.checkout', compact('cart', 'subtotal', 'shippingFee', 'total', 'paymentMethods'));
     }
 
     public function placeOrder(Request $request)
     {
+        $paymentMethods = $this->availablePaymentMethods();
+
         $request->validate([
             'recipient_name'   => 'required|string|max:255',
             'delivery_address' => 'required|string|max:500',
@@ -58,7 +55,7 @@ class OrderController extends Controller
             'city'             => 'required|string|max:100',
             'province'         => 'required|string|max:100',
             'postal_code'      => 'nullable|string|max:10',
-            'payment_method'   => 'required|in:cod,gcash,maya,bank_transfer',
+            'payment_method'   => ['required', Rule::in(array_keys($paymentMethods))],
             'notes'            => 'nullable|string|max:500',
         ]);
 
@@ -179,5 +176,30 @@ class OrderController extends Controller
         Product::find($productId)?->updateRating();
 
         return back()->with('success', 'Thank you for your review!');
+    }
+
+    private function availablePaymentMethods(): array
+    {
+        $methods = [
+            'cod' => [
+                'label' => 'Cash on Delivery',
+                'icon' => '💵',
+                'desc' => 'Pay when your order arrives',
+            ],
+        ];
+
+        if (!$this->payment->isRealPaymentsEnabled() && !$this->payment->isSimulationEnabled()) {
+            return $methods;
+        }
+
+        $demoDescription = $this->payment->isSimulationEnabled()
+            ? 'Demo only — no money will be charged'
+            : 'Processed securely via PayMongo';
+
+        return $methods + [
+            'gcash' => ['label' => 'GCash', 'icon' => '📱', 'desc' => $demoDescription],
+            'maya' => ['label' => 'Maya', 'icon' => '💳', 'desc' => $demoDescription],
+            'bank_transfer' => ['label' => 'Bank Transfer', 'icon' => '🏦', 'desc' => $demoDescription],
+        ];
     }
 }

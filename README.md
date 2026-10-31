@@ -84,3 +84,9 @@ KulturaBiz is a web-based digital marketplace designed for Mindanaoan artisans. 
 4. Run `php artisan migrate`
 5. Run `php artisan serve`
 
+## Payment modes
+
+- Cash on Delivery is always available.
+- Local/demo environments may enable simulated GCash, Maya, and bank transfer with `PAYMENT_SIMULATION_ENABLED=true`. The demo page is not connected to a provider and never marks an order as paid.
+- Simulated payments are disabled by default when `APP_ENV=production`. Do not enable simulation for live transactions.
+- To accept online payments, configure PayMongo credentials and set `USE_REAL_PAYMENT=true`. Verify the provider webhook configuration before launch; the app must use real provider confirmation to mark online orders paid.

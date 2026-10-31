@@ -7,14 +7,12 @@
 <div class="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4">
     <div class="w-full max-w-md">
 
-        {{-- PayMongo-style header --}}
         <div class="text-center mb-6">
-            <div class="inline-flex items-center gap-2 bg-white border border-gray-200 rounded-full px-4 py-2 text-sm text-gray-600 mb-4">
-                Secure Payment · Powered by
-                <span class="font-bold text-blue-600">PayMongo</span>
-                <span class="text-xs text-gray-400">(Simulated)</span>
+            <div class="inline-flex items-center gap-2 bg-amber-100 border border-amber-300 rounded-full px-4 py-2 text-sm font-bold text-amber-900 mb-4">
+                DEMO ONLY — NO REAL PAYMENT
             </div>
-            <h1 class="font-display text-2xl font-bold text-gray-900">Complete Your Payment</h1>
+            <h1 class="font-display text-2xl font-bold text-gray-900">Payment Demo</h1>
+            <p class="text-sm text-gray-600 mt-2">This page does not connect to a payment provider. No money will be charged.</p>
         </div>
 
         {{-- Order Summary Card --}}
@@ -46,84 +44,33 @@
         </div>
 
         {{-- Payment Method Form --}}
-        <div class="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm" x-data="paymentForm()">
+        <div class="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
 
             {{-- Method display --}}
             <div class="flex items-center gap-3 mb-6 p-4 bg-gray-50 rounded-xl border border-gray-200">
                 <span class="text-3xl">{{ $methodInfo['icon'] }}</span>
                 <div>
                     <p class="font-semibold text-gray-900">{{ $methodInfo['label'] }}</p>
-                    <p class="text-xs text-gray-400">{{ $methodInfo['provider'] === 'paymongo' ? 'Processed via PayMongo' : 'Standard transfer' }}</p>
+                    <p class="text-xs text-amber-700 font-medium">Demo only — this order will remain unpaid</p>
                 </div>
             </div>
 
-            {{-- GCash fields --}}
-            @if($order->payment_method === 'gcash')
-                <div class="space-y-4 mb-6">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">GCash Mobile Number</label>
-                        <input type="text" x-model="phone" placeholder="09XXXXXXXXX"
-                               class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400">
-                    </div>
-                    <div class="bg-blue-50 border border-blue-200 rounded-xl p-3 text-sm text-blue-700">
-                             In production, you would be redirected to GCash to approve the payment. This simulation skips that step.
-                    </div>
-                </div>
-            @endif
+            <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6 text-sm text-amber-900">
+                Do not enter payment details or send money. This demo does not initiate a GCash, Maya, or bank transfer.
+            </div>
 
-            {{-- Maya fields --}}
-            @if($order->payment_method === 'maya')
-                <div class="space-y-4 mb-6">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Maya Mobile Number</label>
-                        <input type="text" x-model="phone" placeholder="09XXXXXXXXX"
-                               class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-green-400">
-                    </div>
-                </div>
-            @endif
-
-            {{-- Bank Transfer fields --}}
-            @if($order->payment_method === 'bank_transfer')
-                <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6 text-sm">
-                    <p class="font-semibold text-amber-800 mb-2">Bank Transfer Details</p>
-                    <div class="space-y-1 text-amber-700">
-                        <p><strong>Bank:</strong> BDO Unibank</p>
-                        <p><strong>Account Name:</strong> KulturaBiz Inc.</p>
-                        <p><strong>Account No:</strong> 1234-5678-90</p>
-                        <p><strong>Reference:</strong> {{ $order->order_number }}</p>
-                        <p><strong>Amount:</strong> ₱{{ number_format($order->total_amount, 2) }}</p>
-                    </div>
-                </div>
-            @endif
-
-            {{-- Simulated pay button --}}
+            {{-- Demo-only action; it must not confirm or settle the order. --}}
             <form method="POST" action="{{ route('payments.process', $order->id) }}" id="payment-form">
                 @csrf
-                <input type="hidden" name="intent_id" value="{{ request('intent_id', 'pi_sim_' . uniqid()) }}">
 
                 <button type="submit"
-                        id="pay-btn"
-                        onclick="document.getElementById('pay-btn').disabled=true;
-                                document.getElementById('pay-btn').innerHTML='Processing…';
-                                document.getElementById('payment-form').submit();"
                         class="w-full bg-blue-600 text-white font-bold py-4 rounded-xl hover:bg-blue-700 transition-all text-lg">
-                    @if($order->payment_method === 'gcash')
-                         Pay with GCash
-                    @elseif($order->payment_method === 'maya')
-                         Pay with Maya
-                    @elseif($order->payment_method === 'bank_transfer')
-                         Confirm Transfer
-                    @else
-                         Pay ₱{{ number_format($order->total_amount, 2) }}
-                    @endif
+                    Run demo — no charge
                 </button>
             </form>
 
-            <p class="text-center text-xs text-gray-400 mt-4">
-                This is a simulated payment page. No real money is charged.
-                @if($methodInfo['provider'] === 'paymongo')
-                    In production, users would be redirected to PayMongo's secure hosted page.
-                @endif
+            <p class="text-center text-xs text-amber-700 mt-4">
+                Submitting this demo will not mark the order as paid.
             </p>
         </div>
 
@@ -132,13 +79,5 @@
         </p>
     </div>
 </div>
-
-@section('scripts')
-<script>
-function paymentForm() {
-    return { processing: false, phone: '' };
-}
-</script>
-@endsection
 
 @endsection

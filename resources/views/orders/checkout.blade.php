@@ -66,23 +66,19 @@
                 </div>
 
                 {{-- Payment Method --}}
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6" x-data="{ payment: 'cod' }">
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6" x-data="{ payment: '{{ old('payment_method', 'cod') }}' }">
                     <h2 class="font-semibold text-lg text-gray-900 mb-5">Payment Method</h2>
 
                     <div class="space-y-3">
-                        @foreach([
-                            ['cod', '', 'Cash on Delivery', 'Pay when your order arrives'],
-                            ['gcash', '', 'GCash', 'Mobile wallet payment (simulation)'],
-                            ['bank_transfer', '', 'Bank Transfer', 'Direct bank deposit (simulation)'],
-                        ] as [$value, $icon, $label, $desc])
+                        @foreach($paymentMethods as $value => $method)
                             <label class="cursor-pointer">
                                 <input type="radio" name="payment_method" value="{{ $value }}" x-model="payment" class="sr-only">
                                 <div :class="payment === '{{ $value }}' ? 'border-brand-500 bg-brand-50' : 'border-gray-200 hover:border-gray-300'"
                                      class="border-2 rounded-xl p-4 flex items-center gap-4 transition">
-                                    <span class="text-2xl">{{ $icon }}</span>
+                                    <span class="text-2xl">{{ $method['icon'] }}</span>
                                     <div>
-                                        <div class="font-semibold text-sm text-gray-900">{{ $label }}</div>
-                                        <div class="text-xs text-gray-500">{{ $desc }}</div>
+                                        <div class="font-semibold text-sm text-gray-900">{{ $method['label'] }}</div>
+                                        <div class="text-xs text-gray-500">{{ $method['desc'] }}</div>
                                     </div>
                                     <div class="ml-auto" x-show="payment === '{{ $value }}'">
                                         <span class="w-5 h-5 bg-brand-600 rounded-full flex items-center justify-center text-white text-xs">✓</span>

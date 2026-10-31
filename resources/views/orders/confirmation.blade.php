@@ -6,15 +6,28 @@
 
 <div class="max-w-2xl mx-auto px-4 py-16 text-center">
 
-    {{-- Success Animation --}}
-    <div class="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-        <i class="fa-solid fa-circle-check text-green-600 text-5xl animate-bounce"></i>
+    @php($paymentPending = $order->payment_method !== 'cod' && $order->payment_status === 'pending')
+
+    <div class="w-24 h-24 {{ $paymentPending ? 'bg-amber-100' : 'bg-green-100' }} rounded-full flex items-center justify-center mx-auto mb-6">
+        <i class="fa-solid {{ $paymentPending ? 'fa-clock text-amber-600' : 'fa-circle-check text-green-600' }} text-5xl"></i>
     </div>
 
-    <h1 class="font-display text-3xl font-bold text-gray-900 mb-3">Order Confirmed!</h1>
+    <h1 class="font-display text-3xl font-bold text-gray-900 mb-3">
+        {{ $paymentPending ? 'Order Placed — Payment Pending' : 'Order Confirmed!' }}
+    </h1>
     <p class="text-gray-500 mb-8">
-        Thank you for supporting Mindanaoan artisans. Your order has been placed successfully!
+        @if($paymentPending)
+            This order is not paid. Payment must be completed before it can be fulfilled.
+        @else
+            Thank you for supporting Mindanaoan artisans. Your order has been placed successfully!
+        @endif
     </p>
+
+    @if(session('payment_notice'))
+        <div role="status" class="bg-amber-50 border border-amber-300 text-amber-900 rounded-xl p-4 mb-6 text-sm font-medium">
+            {{ session('payment_notice') }}
+        </div>
+    @endif
 
     {{-- Order Card --}}
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 text-left mb-8">
@@ -55,6 +68,7 @@
             <p class="text-gray-600">Tracking:<strong>{{ $order->tracking_number ?? 'Will be provided when shipped' }}</strong></p>
             <p class="text-gray-600">Estimated Arrival:<strong>{{ $order->estimated_delivery? $order->estimated_delivery->format('F d, Y'): 'Will be updated when shipped' }}</strong></p>
             <p class="text-gray-600">Payment: <strong>{{ strtoupper($order->payment_method) }}</strong></p>
+            <p class="text-gray-600">Payment status: <strong>{{ ucfirst($order->payment_status) }}</strong></p>
         </div>
     </div>
 
