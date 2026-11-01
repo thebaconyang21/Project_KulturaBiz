@@ -175,7 +175,11 @@ class PaymentService
 
         if (!$intentResponse->successful()) {
             Log::error('[PaymentService] PayMongo intent creation failed', $intentResponse->json());
-            return $this->createPaymentIntentSimulated($order);
+            return [
+                'success' => false,
+                'status' => 'failed',
+                'message' => 'Payment could not be initiated. Please try again or choose Cash on Delivery.',
+            ];
         }
 
         $intent    = $intentResponse->json('data');

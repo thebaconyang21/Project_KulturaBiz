@@ -95,6 +95,7 @@ class HomeController extends Controller
     public function productShow(string $slug)
     {
         $product = Product::with(['artisan', 'category', 'culturalStory', 'reviews.customer'])
+            ->active()
             ->where('slug', $slug)
             ->firstOrFail();
 

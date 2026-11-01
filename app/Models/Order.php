@@ -20,6 +20,7 @@ class Order extends Model
         'postal_code',
         'payment_method',
         'payment_status',
+        'payment_intent_id',
         'status',
         'subtotal',
         'shipping_fee',

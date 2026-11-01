@@ -6,7 +6,9 @@ use App\Models\Order;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\User;
+use App\Services\PaymentService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
 class PaymentSimulationTest extends TestCase
@@ -215,6 +217,121 @@ class PaymentSimulationTest extends TestCase
             'id' => $order->id,
             'payment_status' => 'pending',
         ]);
+    }
+
+    public function test_valid_payment_webhook_marks_order_paid(): void
+    {
+        config([
+            'services.paymongo.use_real' => true,
+            'services.paymongo.webhook_secret' => 'test-webhook-secret',
+        ]);
+
+        $user = $this->createCustomer();
+        $order = $this->createOrder($user, 'gcash', 'paid-intent');
+        $payload = json_encode([
+            'data' => [
+                'attributes' => [
+                    'type' => 'payment.paid',
+                    'data' => ['id' => 'paid-intent'],
+                ],
+            ],
+        ], JSON_THROW_ON_ERROR);
+
+        $this->signedWebhook($payload)
+            ->assertOk()
+            ->assertExactJson(['received' => true]);
+
+        $this->assertDatabaseHas('orders', [
+            'id' => $order->id,
+            'payment_status' => 'paid',
+        ]);
+    }
+
+    public function test_valid_failed_payment_webhook_marks_order_failed(): void
+    {
+        config([
+            'services.paymongo.use_real' => true,
+            'services.paymongo.webhook_secret' => 'test-webhook-secret',
+        ]);
+
+        $user = $this->createCustomer();
+        $order = $this->createOrder($user, 'gcash', 'failed-intent');
+        $payload = json_encode([
+            'data' => [
+                'attributes' => [
+                    'type' => 'payment.failed',
+                    'data' => ['id' => 'failed-intent'],
+                ],
+            ],
+        ], JSON_THROW_ON_ERROR);
+
+        $this->signedWebhook($payload)->assertOk();
+
+        $this->assertDatabaseHas('orders', [
+            'id' => $order->id,
+            'payment_status' => 'failed',
+        ]);
+    }
+
+    public function test_invalid_payment_webhook_signature_is_rejected(): void
+    {
+        config([
+            'services.paymongo.use_real' => true,
+            'services.paymongo.webhook_secret' => 'test-webhook-secret',
+        ]);
+
+        $user = $this->createCustomer();
+        $order = $this->createOrder($user, 'gcash', 'untrusted-intent');
+        $payload = json_encode([
+            'data' => [
+                'attributes' => [
+                    'type' => 'payment.paid',
+                    'data' => ['id' => 'untrusted-intent'],
+                ],
+            ],
+        ], JSON_THROW_ON_ERROR);
+
+        $this->call('POST', route('webhooks.paymongo'), [], [], [], [
+            'CONTENT_TYPE' => 'application/json',
+            'HTTP_PAYMONGO_SIGNATURE' => 'invalid',
+        ], $payload)->assertUnauthorized();
+
+        $this->assertDatabaseHas('orders', [
+            'id' => $order->id,
+            'payment_status' => 'pending',
+        ]);
+    }
+
+    public function test_real_payment_creation_failure_does_not_fall_back_to_demo_payment(): void
+    {
+        config([
+            'services.paymongo.use_real' => true,
+            'services.paymongo.secret_key' => 'test-secret',
+        ]);
+        Http::fake([
+            'https://api.paymongo.com/v1/payment_intents' => Http::response(['errors' => []], 500),
+        ]);
+
+        $user = $this->createCustomer();
+        $order = $this->createOrder($user, 'gcash');
+
+        $result = app(PaymentService::class)->createPaymentIntent($order);
+
+        $this->assertFalse($result['success']);
+        $this->assertSame('failed', $result['status']);
+        $this->assertNull($result['payment_intent_id'] ?? null);
+        Http::assertSent(fn ($request) => $request->url() === 'https://api.paymongo.com/v1/payment_intents');
+        Http::assertSentCount(1);
+    }
+
+    private function signedWebhook(string $payload)
+    {
+        $signature = hash_hmac('sha256', $payload, 'test-webhook-secret');
+
+        return $this->call('POST', route('webhooks.paymongo'), [], [], [], [
+            'CONTENT_TYPE' => 'application/json',
+            'HTTP_PAYMONGO_SIGNATURE' => $signature,
+        ], $payload);
     }
 
     private function createCustomer(): User

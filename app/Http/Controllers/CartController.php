@@ -32,13 +32,17 @@ class CartController extends Controller
      */
     public function add(Request $request, int $productId)
     {
+        $validated = $request->validate([
+            'quantity' => 'sometimes|required|integer|min:1|max:100',
+        ]);
+
         $product = Product::findOrFail($productId);
 
         if (!$product->isInStock()) {
             return back()->with('error', 'Sorry, this product is out of stock.');
         }
 
-        $quantity = max(1, (int) $request->input('quantity', 1));
+        $quantity = $validated['quantity'] ?? 1;
 
         $cart = session()->get('cart', []);
 
@@ -50,6 +54,10 @@ class CartController extends Controller
             }
             $cart[$productId]['quantity'] = $newQty;
         } else {
+            if ($quantity > $product->stock) {
+                return back()->with('error', 'Not enough stock available.');
+            }
+
             $cart[$productId] = [
                 'product_id' => $product->id,
                 'name'       => $product->name,
