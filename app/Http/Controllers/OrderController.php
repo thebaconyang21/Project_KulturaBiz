@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 
 /**
  * OrderController
@@ -33,6 +34,40 @@ class OrderController extends Controller
         if (empty($cart)) {
             return redirect()->route('cart.index')->with('error', 'Your cart is empty.');
         }
+
+        $products = Product::with('artisan')
+            ->whereIn('id', array_map('intval', array_keys($cart)))
+            ->get()
+            ->keyBy('id');
+
+        foreach ($cart as $productId => $item) {
+            $product = $products->get((int) $productId);
+            $quantity = is_array($item)
+                ? filter_var($item['quantity'] ?? null, FILTER_VALIDATE_INT)
+                : false;
+
+            if (!$product || !is_array($item) || $product->status !== 'active') {
+                return redirect()->route('cart.index')
+                    ->with('error', 'A product in your cart is no longer available. Please remove it before checkout.');
+            }
+
+            if ($quantity === false || $quantity < 1 || $product->stock < $quantity) {
+                return redirect()->route('cart.index')
+                    ->with('error', "'{$product->name}' no longer has enough stock. Please update your cart.");
+            }
+
+            $cart[$productId] = [
+                ...$item,
+                'product_id' => $product->id,
+                'name' => $product->name,
+                'price' => $product->price,
+                'quantity' => $quantity,
+                'image' => $product->primary_image,
+                'artisan' => $product->artisan?->name ?? 'Artisan',
+            ];
+        }
+
+        session()->put('cart', $cart);
 
         $subtotal    = collect($cart)->sum(fn($i) => $i['price'] * $i['quantity']);
         // Calculate shipping fee based on province if available, otherwise flat rate
@@ -64,19 +99,58 @@ class OrderController extends Controller
             return redirect()->route('cart.index')->with('error', 'Your cart is empty.');
         }
 
-        // Validate stock
+        $quantities = [];
         foreach ($cart as $productId => $item) {
-            $product = Product::find($productId);
-            if (!$product || $product->stock < $item['quantity']) {
-                return back()->with('error', "'{$item['name']}' is no longer available in the requested quantity.");
+            $id = filter_var($productId, FILTER_VALIDATE_INT);
+            $quantity = is_array($item)
+                ? filter_var($item['quantity'] ?? null, FILTER_VALIDATE_INT)
+                : false;
+
+            if ($id === false || $id < 1 || $quantity === false || $quantity < 1 || isset($quantities[$id])) {
+                throw ValidationException::withMessages([
+                    'cart' => 'Your cart contains an invalid item. Please update it and try again.',
+                ]);
             }
+
+            $quantities[$id] = $quantity;
         }
 
-        $order = null;
+        $order = DB::transaction(function () use ($request, $quantities) {
+            $products = Product::whereIn('id', array_keys($quantities))
+                ->orderBy('id')
+                ->lockForUpdate()
+                ->get()
+                ->keyBy('id');
 
-        /** @var \App\Models\Order $order */
-        DB::transaction(function () use ($request, $cart, &$order) {
-            $subtotal    = collect($cart)->sum(fn($i) => $i['price'] * $i['quantity']);
+            if ($products->count() !== count($quantities)) {
+                throw ValidationException::withMessages([
+                    'cart' => 'A product in your cart is no longer available. Please update your cart.',
+                ]);
+            }
+
+            $subtotal = 0;
+            foreach ($quantities as $productId => $quantity) {
+                $product = $products->get($productId);
+
+                if ($product->status !== 'active') {
+                    throw ValidationException::withMessages([
+                        'cart' => "'{$product->name}' is no longer available. Please update your cart.",
+                    ]);
+                }
+
+                $reserved = Product::whereKey($productId)
+                    ->where('status', 'active')
+                    ->where('stock', '>=', $quantity)
+                    ->decrement('stock', $quantity);
+
+                if ($reserved !== 1) {
+                    throw ValidationException::withMessages([
+                        'cart' => "'{$product->name}' no longer has enough stock. Please update your cart.",
+                    ]);
+                }
+
+                $subtotal += $product->price * $quantity;
+            }
 
             // Get dynamic shipping fee from courier service
             $shippingFee = $this->courier->calculateFee($request->province);
@@ -101,20 +175,23 @@ class OrderController extends Controller
                 // Courier details filled in by PaymentController::finalizeOrder()
             ]);
 
-            foreach ($cart as $productId => $item) {
+            foreach ($quantities as $productId => $quantity) {
+                $product = $products->get($productId);
+
                 OrderItem::create([
                     'order_id'     => $order->id,
                     'product_id'   => $productId,
-                    'product_name' => $item['name'],
-                    'price'        => $item['price'],
-                    'quantity'     => $item['quantity'],
-                    'subtotal'     => $item['price'] * $item['quantity'],
+                    'product_name' => $product->name,
+                    'price'        => $product->price,
+                    'quantity'     => $quantity,
+                    'subtotal'     => $product->price * $quantity,
                 ]);
-                Product::where('id', $productId)->decrement('stock', $item['quantity']);
             }
 
-            session()->forget('cart');
+            return $order;
         });
+
+        session()->forget('cart');
 
         // Hand off to PaymentController to handle gateway + courier booking + notifications
         return app(PaymentController::class)->initiate($order);

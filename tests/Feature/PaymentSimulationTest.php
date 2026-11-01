@@ -3,6 +3,8 @@
 namespace Tests\Feature;
 
 use App\Models\Order;
+use App\Models\Category;
+use App\Models\Product;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -19,11 +21,12 @@ class PaymentSimulationTest extends TestCase
         ]);
 
         $user = $this->createCustomer();
+        $product = $this->createProduct();
 
         $this->actingAs($user)
             ->withSession(['cart' => [
-                1 => [
-                    'name' => 'Demo item',
+                $product->id => [
+                    'name' => $product->name,
                     'price' => 100,
                     'quantity' => 1,
                     'image' => '',
@@ -33,6 +36,97 @@ class PaymentSimulationTest extends TestCase
             ->assertOk()
             ->assertSee('Maya')
             ->assertSee('Demo only — no money will be charged');
+    }
+
+    public function test_checkout_refreshes_prices_from_the_product_record(): void
+    {
+        $user = $this->createCustomer();
+        $product = $this->createProduct();
+        $product->update(['price' => 125]);
+
+        $this->actingAs($user)
+            ->withSession(['cart' => [
+                $product->id => [
+                    'name' => 'Old product name',
+                    'price' => 1,
+                    'quantity' => 2,
+                    'image' => '',
+                    'artisan' => 'Old artisan name',
+                ],
+            ]])
+            ->get(route('checkout'))
+            ->assertOk()
+            ->assertSee('₱250.00')
+            ->assertDontSee('Old product name');
+
+        $this->assertSame(125.0, session('cart')[$product->id]['price']);
+        $this->assertSame($product->name, session('cart')[$product->id]['name']);
+    }
+
+    public function test_order_uses_current_database_price_and_reserves_stock(): void
+    {
+        $user = $this->createCustomer();
+        $product = $this->createProduct();
+        $product->update(['price' => 125]);
+
+        $response = $this->actingAs($user)
+            ->withSession(['cart' => [
+                $product->id => [
+                    'name' => 'Stale product name',
+                    'price' => 1,
+                    'quantity' => 2,
+                    'image' => '',
+                ],
+            ]])
+            ->post(route('orders.place'), $this->validOrderDetails());
+
+        $order = Order::latest('id')->firstOrFail();
+
+        $response->assertRedirect(route('orders.confirmation', $order->id));
+        $this->assertDatabaseHas('orders', [
+            'id' => $order->id,
+            'subtotal' => 250,
+        ]);
+        $this->assertDatabaseHas('order_items', [
+            'order_id' => $order->id,
+            'product_id' => $product->id,
+            'product_name' => $product->name,
+            'price' => 125,
+            'quantity' => 2,
+            'subtotal' => 250,
+        ]);
+        $this->assertSame(3, $product->fresh()->stock);
+        $response->assertSessionMissing('cart');
+    }
+
+    public function test_checkout_rejects_stock_that_changed_after_the_checkout_page_loaded(): void
+    {
+        $user = $this->createCustomer();
+        $product = $this->createProduct();
+        $cart = [
+            $product->id => [
+                'name' => $product->name,
+                'price' => $product->price,
+                'quantity' => 3,
+                'image' => '',
+            ],
+        ];
+
+        $this->actingAs($user)
+            ->withSession(['cart' => $cart])
+            ->get(route('checkout'))
+            ->assertOk();
+
+        $product->update(['stock' => 2]);
+
+        $this->from(route('checkout'))
+            ->post(route('orders.place'), $this->validOrderDetails())
+            ->assertRedirect(route('checkout'))
+            ->assertSessionHasErrors('cart');
+
+        $this->assertDatabaseCount('orders', 0);
+        $this->assertSame(2, $product->fresh()->stock);
+        $this->assertNotEmpty(session('cart'));
     }
 
     public function test_demo_payment_does_not_mark_order_as_paid(): void
@@ -132,6 +226,44 @@ class PaymentSimulationTest extends TestCase
             'role' => 'customer',
             'status' => 'approved',
         ]);
+    }
+
+    private function createProduct(): Product
+    {
+        $artisan = User::create([
+            'name' => 'Test Artisan',
+            'email' => uniqid('artisan-') . '@example.com',
+            'password' => 'password',
+            'role' => 'artisan',
+            'status' => 'approved',
+        ]);
+        $category = Category::create([
+            'name' => 'Test Crafts',
+            'slug' => uniqid('test-crafts-'),
+        ]);
+
+        return Product::create([
+            'user_id' => $artisan->id,
+            'category_id' => $category->id,
+            'name' => 'Demo item',
+            'slug' => uniqid('demo-item-'),
+            'description' => 'A sample handmade item for checkout tests.',
+            'price' => 100,
+            'stock' => 5,
+            'status' => 'active',
+        ]);
+    }
+
+    private function validOrderDetails(): array
+    {
+        return [
+            'recipient_name' => 'Test Customer',
+            'delivery_address' => '123 Test Street',
+            'contact_number' => '09123456789',
+            'city' => 'Marawi',
+            'province' => 'Lanao del Sur',
+            'payment_method' => 'cod',
+        ];
     }
 
     private function createOrder(User $user, string $paymentMethod, ?string $intentId = null): Order

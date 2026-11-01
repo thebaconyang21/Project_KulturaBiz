@@ -49,6 +49,7 @@
     <style>
         body { font-family: 'Inter', sans-serif; }
         .font-display { font-family: 'Playfair Display', serif; }
+        [x-cloak] { display: none !important; }
         .hero-pattern {
             background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
         }
@@ -65,108 +66,124 @@
 <body class="bg-gray-50 text-gray-800 min-h-screen flex flex-col">
 
     {{-- NAVBAR --}}
-    <nav class="bg-brand-700 text-white shadow-lg sticky top-0 z-50" x-data="{ mobileOpen: false }">
+    <nav class="sticky top-0 z-50 border-b border-white/10 bg-brand-900 text-white shadow-lg shadow-brand-900/10" x-data="{ mobileOpen: false }">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16">
-
-                {{-- Logo --}}
-                <a href="{{ route('home') }}" class="flex items-center gap-2">
-                    <span class="text-accent text-2xl"></span>
-                    <span class="font-display text-xl font-bold tracking-wide">KulturaBiz</span>
+            <div class="flex items-center justify-between h-[4.5rem]">
+                <a href="{{ route('home') }}" class="flex items-center gap-3 group" aria-label="KulturaBiz home">
+                    <span class="flex h-10 w-10 items-center justify-center rounded-full border border-accent/50 bg-white/10 text-accent transition group-hover:bg-white/15">
+                        <i class="fa-solid fa-hands-holding-circle text-lg" aria-hidden="true"></i>
+                    </span>
+                    <span>
+                        <span class="block font-display text-xl font-bold tracking-wide leading-tight">KulturaBiz</span>
+                        <span class="hidden sm:block text-[10px] uppercase tracking-[0.18em] text-brand-200">Mindanao made</span>
+                    </span>
                 </a>
 
-                {{-- Desktop Nav --}}
-                <div class="hidden md:flex items-center gap-6 text-sm font-medium">
-                    <a href="{{ route('home') }}" class="hover:text-accent transition">Home</a>
-                    <a href="{{ route('products.index') }}" class="hover:text-accent transition">Products</a>
-                    <a href="{{ route('cultural.index') }}" class="hover:text-accent transition">Cultural Stories</a>
+                <div class="hidden md:flex items-center gap-1 text-sm font-medium">
+                    <a href="{{ route('home') }}"
+                       @class(['rounded-full px-4 py-2 transition', 'bg-white/10 text-accent' => request()->routeIs('home'), 'text-brand-100 hover:bg-white/10 hover:text-white' => !request()->routeIs('home')])>
+                        Home
+                    </a>
+                    <a href="{{ route('products.index') }}"
+                       @class(['rounded-full px-4 py-2 transition', 'bg-white/10 text-accent' => request()->routeIs('products.*'), 'text-brand-100 hover:bg-white/10 hover:text-white' => !request()->routeIs('products.*')])>
+                        Shop
+                    </a>
+                    <a href="{{ route('cultural.index') }}"
+                       @class(['rounded-full px-4 py-2 transition', 'bg-white/10 text-accent' => request()->routeIs('cultural.*'), 'text-brand-100 hover:bg-white/10 hover:text-white' => !request()->routeIs('cultural.*')])>
+                        Stories
+                    </a>
 
                     @auth
-                        {{-- Cart --}}
                         @if(auth()->user()->isCustomer())
-                            <a href="{{ route('cart.index') }}" class="relative hover:text-accent transition">
-                                <i class="fa-solid fa-cart-shopping"></i>
-                                @php $cartCount = count(session()->get('cart', [])); @endphp
+                            <a href="{{ route('cart.index') }}" aria-label="Shopping cart" class="relative ml-2 flex h-10 w-10 items-center justify-center rounded-full text-brand-100 transition hover:bg-white/10 hover:text-white">
+                                <i class="fa-solid fa-bag-shopping text-base" aria-hidden="true"></i>
+                                @php $cartCount = collect(session()->get('cart', []))->sum('quantity'); @endphp
                                 @if($cartCount > 0)
-                                    <span class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">{{ $cartCount }}</span>
+                                    <span class="absolute right-0 top-0 flex h-5 min-w-5 items-center justify-center rounded-full bg-accent px-1 text-[10px] font-bold text-brand-900">{{ $cartCount }}</span>
                                 @endif
                             </a>
                         @endif
 
-                        {{-- User Dropdown --}}
-                        <div class="relative" x-data="{ open: false }">
-                            <button @click="open = !open" class="flex items-center gap-2 hover:text-accent transition">
-                                <img src="{{ auth()->user()->profile_photo_url }}" alt="" class="w-7 h-7 rounded-full border border-accent">
-                                {{ auth()->user()->name }} <i class="fa-solid fa-chevron-down text-xs ml-1"></i>
+                        <div class="relative ml-2" x-data="{ open: false }">
+                            <button @click="open = !open" :aria-expanded="open.toString()" aria-haspopup="true" class="flex items-center gap-2 rounded-full border border-white/15 bg-white/5 py-1.5 pl-1.5 pr-3 transition hover:bg-white/10">
+                                <img src="{{ auth()->user()->profile_photo_url }}" alt="" class="h-8 w-8 rounded-full border border-accent/70 object-cover">
+                                <span class="max-w-28 truncate">{{ auth()->user()->name }}</span>
+                                <i class="fa-solid fa-chevron-down text-[10px] text-brand-200" aria-hidden="true"></i>
                             </button>
-                            <div x-show="open" @click.away="open = false"
-                                 class="absolute right-0 mt-2 w-48 bg-white text-gray-800 rounded-lg shadow-xl border border-gray-100 py-1 z-50">
+                            <div x-cloak x-show="open" x-transition.origin.top.right @click.away="open = false"
+                                 class="absolute right-0 mt-3 w-56 overflow-hidden rounded-2xl border border-gray-100 bg-white py-2 text-gray-800 shadow-xl">
                                 @if(auth()->user()->isAdmin())
-                                    <a href="{{ route('admin.dashboard') }}" class="block px-4 py-2 hover:bg-gray-50 text-sm">Admin Panel</a>
+                                    <a href="{{ route('admin.dashboard') }}" class="block px-4 py-2.5 text-sm hover:bg-brand-50"><i class="fa-solid fa-gauge-high mr-2 w-4 text-brand-600"></i>Admin Panel</a>
                                 @elseif(auth()->user()->isArtisan())
-                                    <a href="{{ route('artisan.dashboard') }}" class="block px-4 py-2 hover:bg-gray-50 text-sm">Artisan Dashboard</a>
-                                    <a href="{{ route('artisan.products.index') }}" class="block px-4 py-2 hover:bg-gray-50 text-sm">My Products</a>
-                                    <a href="{{ route('artisan.orders') }}" class="block px-4 py-2 hover:bg-gray-50 text-sm">My Orders</a>
+                                    <a href="{{ route('artisan.dashboard') }}" class="block px-4 py-2.5 text-sm hover:bg-brand-50"><i class="fa-solid fa-chart-line mr-2 w-4 text-brand-600"></i>Artisan Dashboard</a>
+                                    <a href="{{ route('artisan.products.index') }}" class="block px-4 py-2.5 text-sm hover:bg-brand-50"><i class="fa-solid fa-box-open mr-2 w-4 text-brand-600"></i>My Products</a>
+                                    <a href="{{ route('artisan.orders') }}" class="block px-4 py-2.5 text-sm hover:bg-brand-50"><i class="fa-solid fa-receipt mr-2 w-4 text-brand-600"></i>My Orders</a>
                                 @else
-                                    <a href="{{ route('orders.mine') }}" class="block px-4 py-2 hover:bg-gray-50 text-sm">My Orders</a>
+                                    <a href="{{ route('orders.mine') }}" class="block px-4 py-2.5 text-sm hover:bg-brand-50"><i class="fa-solid fa-box mr-2 w-4 text-brand-600"></i>My Orders</a>
                                 @endif
-                                <hr class="my-1">
+                                <hr class="my-2 border-gray-100">
                                 <form method="POST" action="{{ route('logout') }}">
                                     @csrf
-                                    <button type="submit"
-                                        class="block w-full text-left px-4 py-2 hover:bg-gray-50 text-sm text-red-600">
-                                        <i class="fa-solid fa-right-from-bracket mr-1"></i> Logout
+                                    <button type="submit" class="block w-full px-4 py-2.5 text-left text-sm text-red-600 hover:bg-red-50">
+                                        <i class="fa-solid fa-right-from-bracket mr-2 w-4" aria-hidden="true"></i>Sign out
                                     </button>
                                 </form>
                             </div>
                         </div>
                     @else
-                        <a href="{{ route('login') }}" class="hover:text-accent transition">Login</a>
-                        <a href="{{ route('register') }}" class="bg-accent text-brand-900 px-4 py-1.5 rounded-full font-semibold hover:bg-yellow-400 transition text-sm">
-                            Register
+                        <a href="{{ route('login') }}" class="ml-3 rounded-full px-4 py-2 text-brand-100 transition hover:bg-white/10 hover:text-white">Sign in</a>
+                        <a href="{{ route('register') }}" class="rounded-full bg-accent px-5 py-2.5 font-semibold text-brand-900 shadow-sm transition hover:bg-yellow-300">
+                            Join KulturaBiz
                         </a>
                     @endauth
                 </div>
 
-                {{-- Mobile Menu Toggle --}}
-                <button @click="mobileOpen = !mobileOpen" class="md:hidden text-white">
-                        <i class="fa-solid fa-bars text-xl"></i>
+                <button @click="mobileOpen = !mobileOpen" :aria-expanded="mobileOpen.toString()" aria-label="Toggle navigation menu" class="flex h-10 w-10 items-center justify-center rounded-full border border-white/20 text-white transition hover:bg-white/10 md:hidden">
+                    <i :class="mobileOpen ? 'fa-xmark' : 'fa-bars'" class="fa-solid text-lg" aria-hidden="true"></i>
                 </button>
             </div>
         </div>
 
-        {{-- Mobile Menu --}}
-        <div x-show="mobileOpen" class="md:hidden bg-brand-800 px-4 pb-4 space-y-2 text-sm">
-            <a href="{{ route('home') }}" class="block py-2 hover:text-accent">Home</a>
-            <a href="{{ route('products.index') }}" class="block py-2 hover:text-accent">Products</a>
-            <a href="{{ route('cultural.index') }}" class="block py-2 hover:text-accent">Cultural Stories</a>
+        <div x-cloak x-show="mobileOpen" x-transition class="space-y-1 border-t border-white/10 bg-brand-900 px-4 pb-5 pt-3 text-sm md:hidden">
+            <a href="{{ route('home') }}" class="block rounded-xl px-4 py-3 hover:bg-white/10">Home</a>
+            <a href="{{ route('products.index') }}" class="block rounded-xl px-4 py-3 hover:bg-white/10">Shop products</a>
+            <a href="{{ route('cultural.index') }}" class="block rounded-xl px-4 py-3 hover:bg-white/10">Cultural stories</a>
             @auth
-                <a href="{{ route('orders.mine') }}" class="block py-2 hover:text-accent">My Orders</a>
+                @if(auth()->user()->isAdmin())
+                    <a href="{{ route('admin.dashboard') }}" class="block rounded-xl px-4 py-3 hover:bg-white/10">Admin panel</a>
+                @elseif(auth()->user()->isArtisan())
+                    <a href="{{ route('artisan.dashboard') }}" class="block rounded-xl px-4 py-3 hover:bg-white/10">Artisan dashboard</a>
+                    <a href="{{ route('artisan.products.index') }}" class="block rounded-xl px-4 py-3 hover:bg-white/10">My products</a>
+                    <a href="{{ route('artisan.orders') }}" class="block rounded-xl px-4 py-3 hover:bg-white/10">My orders</a>
+                @else
+                    <a href="{{ route('cart.index') }}" class="block rounded-xl px-4 py-3 hover:bg-white/10">Shopping cart</a>
+                    <a href="{{ route('orders.mine') }}" class="block rounded-xl px-4 py-3 hover:bg-white/10">My orders</a>
+                @endif
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
-                    <button type="submit" class="block py-2 text-red-400 w-full text-left">
-                        <i class="fa-solid fa-right-from-bracket mr-1"></i> Logout
+                    <button type="submit" class="block w-full rounded-xl px-4 py-3 text-left text-red-300 hover:bg-white/10">
+                        <i class="fa-solid fa-right-from-bracket mr-1"></i> Sign out
                     </button>
                 </form>
             @else
-                <a href="{{ route('login') }}" class="block py-2 hover:text-accent">Login</a>
-                <a href="{{ route('register') }}" class="block py-2 hover:text-accent">Register</a>
+                <a href="{{ route('login') }}" class="block rounded-xl px-4 py-3 hover:bg-white/10">Sign in</a>
+                <a href="{{ route('register') }}" class="mt-2 block rounded-xl bg-accent px-4 py-3 text-center font-semibold text-brand-900">Create an account</a>
             @endauth
         </div>
     </nav>
 
     {{-- FLASH MESSAGES --}}
     @if(session('success'))
-        <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 4000)"
-             class="bg-green-50 border-l-4 border-green-500 text-green-800 px-6 py-3 text-sm flex justify-between items-center">
-            <span> {{ session('success') }}</span>
+        <div role="status" x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 4000)"
+             class="flex items-center justify-between border-l-4 border-green-500 bg-green-50 px-6 py-3 text-sm text-green-800">
+            <span><i class="fa-solid fa-circle-check mr-2" aria-hidden="true"></i>{{ session('success') }}</span>
             <button @click="show = false" class="text-green-600 hover:text-green-800 font-bold text-lg leading-none">×</button>
         </div>
     @endif
     @if(session('error'))
-        <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 5000)"
-             class="bg-red-50 border-l-4 border-red-500 text-red-800 px-6 py-3 text-sm flex justify-between items-center">
-            <span> {{ session('error') }}</span>
+        <div role="alert" x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 5000)"
+             class="flex items-center justify-between border-l-4 border-red-500 bg-red-50 px-6 py-3 text-sm text-red-800">
+            <span><i class="fa-solid fa-circle-exclamation mr-2" aria-hidden="true"></i>{{ session('error') }}</span>
             <button @click="show = false" class="text-red-600 hover:text-red-800 font-bold text-lg leading-none">×</button>
         </div>
     @endif
@@ -177,12 +194,12 @@
     </main>
 
     {{-- FOOTER --}}
-    <footer class="bg-brand-900 text-white mt-16">
-        <div class="max-w-7xl mx-auto px-4 py-12">
+    <footer class="mt-20 bg-brand-900 text-white">
+        <div class="max-w-7xl mx-auto px-4 py-14 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
                 <div class="md:col-span-2">
                     <div class="flex items-center gap-2 mb-3">
-                        <span class="text-accent text-2xl"></span>
+                        <span class="flex h-10 w-10 items-center justify-center rounded-full border border-accent/50 bg-white/10 text-accent"><i class="fa-solid fa-hands-holding-circle" aria-hidden="true"></i></span>
                         <span class="font-display text-xl font-bold">KulturaBiz</span>
                     </div>
                     <p class="text-brand-200 text-sm leading-relaxed max-w-xs">

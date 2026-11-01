@@ -7,6 +7,12 @@
 <div class="max-w-5xl mx-auto px-4 py-8">
     <h1 class="font-display text-3xl font-bold text-brand-800 mb-8">Checkout</h1>
 
+    @error('cart')
+        <div role="alert" class="mb-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+            <i class="fa-solid fa-circle-exclamation mr-2" aria-hidden="true"></i>{{ $message }}
+        </div>
+    @enderror
+
     <form method="POST" action="{{ route('orders.place') }}">
         @csrf
 
